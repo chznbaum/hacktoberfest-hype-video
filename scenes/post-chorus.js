@@ -48,14 +48,14 @@ const BANNERS = [
 ];
 const DAY = {
   '16x9': {
-    H: 30, padX: 9, rope: 16, clearX: 236, minLen: 56, word: 120, imgH: 128, badgeH: 140, badgeWord: 92,
+    H: 30, padX: 9, rope: 16, clearX: 236, minLen: 56, word: 120, drift: 5, imgH: 128, badgeH: 140, badgeWord: 92,
     lanes: [{ top: 20, dir: -1, hc: 136 }, { top: 72, dir: 1, hc: 122 }], midTop: 46,
     lh: { x: 258, base: 124, h: 104 }, water: { x: 128, y: 131, fadeW: 70 }, boat: { x: 160, y: 142 }, plus: [1788, 192],
     clouds: [{ kind: 'big', x: 270, y: 50, v: 1.1 }, { kind: 'twoTone', x: 196, y: 108, v: 0.8 }, { kind: 'small', x: 22, y: 116, v: 0.6 }, { kind: 'wisp', x: 86, y: 6, v: 1.4 }],
     gulls: [{ x: 286, y: 70, p: 0 }, { x: 296, y: 82, p: 0.4 }, { x: 176, y: 124, p: 0.7 }],
   },
   '9x16': {
-    H: 24, padX: 7, rope: 12, clearX: 178, minLen: 44, word: 92, imgH: 100, badgeH: 108, badgeWord: 70,
+    H: 24, padX: 7, rope: 12, clearX: 178, minLen: 44, word: 84, drift: 3, imgH: 100, badgeH: 108, badgeWord: 70,
     lanes: [{ top: 46, dir: -1, hc: 90 }, { top: 112, dir: 1, hc: 90 }], midTop: 80,
     lh: { x: 122, base: 274, h: 112 }, water: { x: 0, y: 282, fadeW: 40 }, boat: { x: 22, y: 292 }, plus: [984, 846],
     clouds: [{ kind: 'big', x: 4, y: 176, v: 0.9 }, { kind: 'twoTone', x: 150, y: 160, v: 0.7 }, { kind: 'small', x: 120, y: 26, v: 0.5 }, { kind: 'wisp', x: 20, y: 30, v: 1.1 }],
@@ -102,10 +102,10 @@ function drawDay(g, t, c) {
     const X = 1.3 * spb;
     return { b, i, lane, content, len, W, tl, E, te, X, dir: lane.dir };
   });
-  const drift = 5; // px/s while holding: they keep flying
+  const drift = L.drift; // px/s while holding: they keep flying
   const pathX = (it, tt) => {
     const holdMid = it.te < Infinity ? (it.tl + it.te) / 2 : it.tl + 1.6;
-    const hc = Math.min(it.lane.hc, L.clearX - it.W / 2 - drift * 1.2);   // keep holds clear of the lighthouse
+    const hc = Math.min(it.lane.hc, L.clearX - it.W / 2 - drift * 1.4);   // keep holds clear of the lighthouse
     const xc = hc + it.dir * drift * (tt - holdMid);
     const nose0 = xc + it.dir * it.W / 2;                     // nose at the leading end of the group
     // entry: from fully off-screen behind, eased out; exit: off-screen ahead, eased in
@@ -171,6 +171,15 @@ function drawDay(g, t, c) {
     const cs = [[gm.fabricX0 - 2, gm.top - 3], [gm.fabricX1 + 2, gm.top - 3], [gm.fabricX0 - 2, gm.bot + 2], [gm.fabricX1 + 2, gm.bot + 2]];
     cs.forEach(([sx, sy], j) => sparkle(p, sx, sy, t, it.tl + j * 0.05, { color: j % 2 ? C.cream : C.gold, size: 2, dur: 0.4 }));
   });
+  // the venue's glide to the centre on the last bar gets a sparkle burst around its fabric
+  const gv = geo[4];
+  if (gv && t >= tf) {
+    for (let k = 0; k < 6; k++) {
+      const sx = gv.fabricX0 + R(((k + 0.5) / 6) * (gv.fabricX1 - gv.fabricX0));
+      const sy = k % 2 ? gv.top - 4 : gv.bot + 3;
+      sparkle(p, sx, sy, t, tf + k * 0.04, { color: k % 3 === 0 ? C.cream : k % 3 === 1 ? C.gold : C.sky, size: 2, dur: 0.45 });
+    }
+  }
   const bi = c.beat(t).index;
   if (bi >= 0) {
     const tb = c.beats[bi];
@@ -228,7 +237,7 @@ const CREW = [
 const NIGHT = {
   '16x9': {
     waterY: 128, lh: { x: 258, base: 124, h: 104 }, beamLen: 170,
-    burst: { x: 117, y: 56, r: 64 }, small: 22,
+    burst: { x: 117, y: 56, r: 64 }, small: 27, flank: [[28, 44], [214, 40]],
     logoC: { x: 702, y: 366 }, chipY: 150, chipSize: 46, logoH: { rva: 340, aic: 300, mks: 212 }, logoW: 960,
     spots: [[30, 34], [214, 24], [206, 92], [24, 100], [300, 16], [176, 112], [62, 16], [292, 74]],
     rows: [{ base: 165, step: 9, ox: 0 }], mass: 164, fronts: [{ base: 181, step: 12, ox: 3 }],
@@ -237,7 +246,7 @@ const NIGHT = {
   },
   '9x16': {
     waterY: 238, lh: { x: 144, base: 234, h: 80 }, beamLen: 120,
-    burst: { x: 90, y: 104, r: 58 }, small: 18,
+    burst: { x: 90, y: 104, r: 58 }, small: 22, flank: [[30, 40], [150, 46]],
     logoC: { x: 540, y: 640 }, chipY: 330, chipSize: 44, logoH: { rva: 400, aic: 420, mks: 212 }, logoW: 860,
     spots: [[28, 38], [150, 30], [26, 180], [154, 176], [92, 20], [58, 204], [132, 206], [20, 110]],
     rows: [{ base: 284, step: 9, ox: 0 }], mass: 283, fronts: [{ base: 300, step: 12, ox: 3 }, { base: 318, step: 13, ox: 9 }],
@@ -271,11 +280,18 @@ function drawNight(g, t, c) {
   for (let b = 1; b < nB - 0.6; b += 1) if (!big.some((tb) => Math.abs(B(b) - tb) < 0.05)) smallBeats.push(b);
   // extra off-beat crackle in the last bar
   for (const b of [gap * 2 + 1.5, gap * 2 + 2.5, nB - 1.5]) if (b > gap * 2 && b < nB - 0.4) smallBeats.push(b);
-  const smalls = smallBeats.map((b, j) => {
+  const PAL = [[C.gold, '#B97469'], [C.coral, '#8F4F47'], [C.sky, '#2B6A80'], [C.cream, '#827F6F']];
+  const smalls = [];
+  smallBeats.forEach((b, j) => {
     const sp = L.spots[j % L.spots.length];
-    const cols = [[C.gold, '#B97469'], [C.coral, '#8F4F47'], [C.sky, '#2B6A80'], [C.cream, '#827F6F']][j % 4];
-    return { t: B(b), x: sp[0], y: sp[1], cols, seed: 40 + j, launch: spb * 0.5 };
+    smalls.push({ t: B(b), x: sp[0], y: sp[1], cols: PAL[j % 4], seed: 40 + j, launch: spb * 0.5, r: L.small });
+    if (j % 2 === 1) { // a partner burst across the sky, half a beat later
+      const sq = L.spots[(j + 3) % L.spots.length];
+      smalls.push({ t: B(b + 0.5), x: sq[0], y: sq[1] + 4, cols: PAL[(j + 2) % 4], seed: 140 + j, launch: spb * 0.5, r: R(L.small * 0.8) });
+    }
   });
+  // the finale downbeat: two flanking bursts with the last big one
+  L.flank.forEach(([x, y], k) => smalls.push({ t: big[2], x, y, cols: PAL[k ? 1 : 0], seed: 90 + k, launch: spb * 0.75, r: R(L.small * 1.25) }));
   const curBig = big.reduce((a, tb, i) => (t >= tb - 1e-6 ? i : a), -1);
   const kBig = curBig >= 0 ? t - big[curBig] : Infinity;
   const recentCol = curBig >= 0 && kBig < 1.1 ? CREW[curBig].colors[0] : null;
@@ -292,7 +308,7 @@ function drawNight(g, t, c) {
   });
   for (const s of smalls) {
     rocket(p, s.x + 4, L.waterY, s.x, s.y, t - (s.t - s.launch), s.launch, s.seed);
-    firework(p, s.x, s.y, t - s.t, { n: 22, r: L.small, life: 1.0, colors: s.cols, seed: s.seed, gravity: 12 });
+    firework(p, s.x, s.y, t - s.t, { n: 26, r: s.r, life: 1.15, colors: s.cols, seed: s.seed, gravity: 12 });
   }
   // distant shore with a few lights (Hampton Roads across the water)
   for (let x = L.shore.x0; x < L.shore.x1; x++) {
@@ -329,6 +345,17 @@ function drawNight(g, t, c) {
     anim(hi, t, { t0: tb, t1: tOut, x: L.logoC.x, y: chipY, enter: 'stamp', exit: 'shrink' },
       (h) => chip(h, cr.head, L.logoC.x, chipY, { size: L.chipSize, align: 'center' }));
   });
+  // after the last reveal: sparkles orbit the venue badge on every beat
+  if (curBig === 2 && bi >= 0 && t > big[2] + spb * 0.9) {
+    const tb = c.beats[bi];
+    const ct = crewContent(c, CREW[2], L);
+    const rr = (Math.max(ct.w, ct.h) / 2 + 30) / 6;
+    for (let k = 0; k < 3; k++) {
+      const a = (bi * 1.3 + k * 2.1);
+      const sx = R(L.logoC.x / 6 + Math.cos(a) * rr), sy = R(L.logoC.y / 6 + Math.sin(a) * rr * 0.9);
+      sparkle(p, sx, sy, t, tb + k * 0.07, { color: [C.gold, C.sky, C.cream][k], size: 2, dur: 0.4 });
+    }
+  }
   // ignition flash on the big bursts (hi layer, 3 frames)
   if (kBig < 0.1) flash(hi, DW, DH, 0.16 * (1 - kBig / 0.1), C.cream);
 }
