@@ -59,6 +59,9 @@ export default {
     const p = !fast ? Math.floor(pSlow * 50) / 50 : lerp(0.14, 1, ease.inOutQuad(clamp((tq - tFast) / Math.max(0.2, tDone - tFast))));
     const done = t >= tDone;
 
+    // ---- full throttle: key-art streaks rush past behind the sloth + laptop
+    if (fast && !done) wallStreaks(X, 0, deskY - (c.fmt === '9x16' ? 62 : 58), L.lap.cx + R(L.lap.w / 2) + 24, 50, t, t - tFast);
+
     // ---- laptop + sloth
     const lap = laptop(X, L.lap.cx, deskY, { w: L.lap.w, lh: L.lap.lh, d: 6 });
     trainScreen(X, lap, p, t, { fast, done });
@@ -136,6 +139,19 @@ export default {
   },
 };
 
+/** Horizontal speed streaks moving left (wall tones + a few sky/cream glints), ramping in over k seconds. */
+function wallStreaks(X, x, y, w, h, t, k) {
+  const q = Math.floor(t * 15);
+  const ramp = clamp(k / 0.15);
+  for (let i = 0; i < 9; i++) {
+    const yy = y + R((i / 8) * h);
+    const len = R((10 + hash(i, 1, 4) * 26) * ramp);
+    const sp = 260 + hash(i, 2, 4) * 160;
+    const xx = x + w - R(((q / 15) * sp + hash(i, 3, 4) * w) % (w + len));
+    const col = i % 4 === 1 ? RAMP.water[3] : i % 4 === 3 ? RAMP.teal[6] : RAMP.teal[5];
+    hline(X, Math.max(x, xx), Math.min(x + w, xx + len), yy, col);
+  }
+}
 /** Dotted placeholder rectangle (pre-power). */
 function ghost(X, x, y, w, h) {
   const col = RAMP.teal[3];

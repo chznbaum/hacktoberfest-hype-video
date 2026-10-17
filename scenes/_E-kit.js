@@ -79,39 +79,15 @@ export function eyebrowAt(hi, t, str, x, y, { t0, t1, size = 34, align = 'left',
 
 // ================================================================ room
 /**
- * Indoor makerspace: flat teal wall (key art), pegboard strip with tool silhouettes, warm pendant lamps,
- * and the hack desk (tan top edge + dark teal front with panel seams; same build as C08/C09's table).
- * opts: { deskY, lamps: [x...], lampLen, peg: {x,y,w,h} | null, t, pulse }
+ * Indoor makerspace: flat teal wall (key art), warm pendant lamps, and the hack desk (tan top edge + dark teal front with panel seams; same build as C08/C09's table).
+ * opts: { deskY, lamps: [x...], lampLen, pulse }
  */
 export function room(g, c, o = {}) {
   const { px: X, PW, PH } = g;
   const deskY = o.deskY ?? PH - 30;
-  if (o.peg) pegboard(X, o.peg.x, o.peg.y, o.peg.w, o.peg.h, c.fmt);
   for (const lx of o.lamps || []) lamp(X, lx, o.lampLen ?? 14, o.pulse || 0);
   desk(X, deskY, PW, PH);
   return deskY;
-}
-function pegboard(ctx, x, y, w, h, fmt) {
-  const cv = cached(`E-peg|${fmt}|${x}|${y}|${w}|${h}`, w, h, (k) => {
-    rect(k, 0, 0, w, h, RAMP.teal[3]);
-    hline(k, 0, w - 1, 0, RAMP.teal[5]);
-    vline(k, 0, 1, h - 1, RAMP.teal[5]);
-    hline(k, 1, w - 1, h - 1, RAMP.teal[2]);
-    vline(k, w - 1, 1, h - 1, RAMP.teal[2]);
-    for (let yy = 3; yy < h - 2; yy += 4) for (let xx = 3; xx < w - 2; xx += 4) px(k, xx, yy, RAMP.teal[1]);
-    // tool silhouettes (one tone darker than the board): wrench, screwdriver, pliers, scissors, tape roll
-    const S = RAMP.teal[1], H = RAMP.teal[2];
-    const tools = [
-      (tx) => { vline(k, tx, 5, 17, S); rect(k, tx - 2, 3, 5, 3, S); px(k, tx, 3, RAMP.teal[3]); rect(k, tx - 1, 17, 3, 2, S); },
-      (tx) => { rect(k, tx - 1, 4, 3, 6, H); vline(k, tx, 10, 18, S); },
-      (tx) => { line(k, tx - 2, 4, tx, 11, S); line(k, tx + 2, 4, tx, 11, S); line(k, tx, 11, tx - 1, 18, S); line(k, tx, 11, tx + 1, 18, S); },
-      (tx) => { ellipse(k, tx, 7, 3, 3, S); ellipse(k, tx, 7, 1, 1, RAMP.teal[3]); },
-      (tx) => { line(k, tx - 2, 4, tx + 1, 14, S); line(k, tx + 2, 4, tx - 1, 14, S); rect(k, tx - 3, 14, 2, 3, H); rect(k, tx + 2, 14, 2, 3, H); },
-    ];
-    let i = 0;
-    for (let tx = 6; tx < w - 4; tx += 9) { tools[i % tools.length](tx); i++; }
-  });
-  ctx.drawImage(cv, x, y);
 }
 /** Industrial pendant lamp hanging from the top edge, warm dithered light pool. */
 function lamp(ctx, x, len, pulse) {

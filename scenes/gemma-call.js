@@ -24,7 +24,7 @@ const LAYOUT = {
   '9x16': {
     deskY: 300, lamps: [],
     model: { x: 44, y: 116, w: 92, h: 70 }, gemHover: 28, gemHW: 12,
-    bars: { x: 16, y: 196, w: 148, rowH: 10, gap: 4 }, stampR: 16,
+    bars: { x: 22, y: 196, w: 144, rowH: 10, gap: 4 }, stampR: 16,
     slothX: 122,
     text: { x: 80, y: 400, size: 168, callY: 400, callSize: 168, callX: 1000, callAlign: 'right' },
   },
