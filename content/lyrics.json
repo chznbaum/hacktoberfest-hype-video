@@ -1,7 +1,7 @@
 {
  "lines": {
   "cold": {
-   "text": "(instrumental cold open)",
+   "text": "(ad-lib intro: yeah, yeah)",
    "section": "intro",
    "instrumental": true,
    "chant": false
@@ -118,6 +118,12 @@
    "text": "Hampton's 'bout to glow, and you know it!",
    "section": "ch1",
    "instrumental": false,
+   "chant": false
+  },
+  "pc1": {
+   "text": "(post-chorus ad-libs: and you know it! Hampton!)",
+   "section": "pc1",
+   "instrumental": true,
    "chant": false
   },
   "v2.1": {
@@ -240,6 +246,12 @@
    "instrumental": false,
    "chant": false
   },
+  "pc2": {
+   "text": "(post-chorus ad-libs: and you know it! Hampton!)",
+   "section": "pc2",
+   "instrumental": true,
+   "chant": false
+  },
   "out.1": {
    "text": "Sign up on M-L-H, Saturday, ten A.M.",
    "section": "out",
@@ -265,7 +277,7 @@
    "chant": false
   },
   "tail": {
-   "text": "(tail / ring-out)",
+   "text": "(instrumental ring-out)",
    "section": "out",
    "instrumental": true,
    "chant": false

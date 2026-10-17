@@ -43,7 +43,7 @@
     ],
     [
      "out.1",
-     "@end"
+     "out.4"
     ]
    ],
    "splice": [
@@ -55,7 +55,7 @@
      "beats": 1
     }
    ],
-   "_note": "BRIEF section 4: intro chant -> hosts -> wake-up -> full chorus 1 -> end card (~42 s). Verse 1 is skipped. To include verse 1 instead use ranges [[\"i.1\",\"ch.8\"],[\"out.1\",\"@end\"]] and splice [{\"type\":\"stair\",\"beats\":1}]."
+   "_note": "Real track (100 BPM): intro chant (4.30-11.61) + chorus 1 (30.81-50.61) + outro through 'Hacktoberfest!' (115.42-131.02) = ~42.6 s. Splice points sit on beats 19->51 and 84->192 so the groove continues (bar phase preserved)."
   }
  },
  "overlays": [
@@ -188,6 +188,13 @@
    "variant": 1
   },
   {
+   "id": "C16P",
+   "scene": "post-chorus",
+   "from": "pc1",
+   "to": "pc1",
+   "variant": 1
+  },
+  {
    "id": "C17",
    "scene": "decision-model",
    "from": "v2.1",
@@ -291,6 +298,13 @@
    "scene": "hampton-glow",
    "from": "ch2.8",
    "to": "ch2.8",
+   "variant": 2
+  },
+  {
+   "id": "C30P",
+   "scene": "post-chorus",
+   "from": "pc2",
+   "to": "pc2",
    "variant": 2
   },
   {

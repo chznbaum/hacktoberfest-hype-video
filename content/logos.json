@@ -1,13 +1,71 @@
 {
-  "_note": "Partner logos. 'file' is null until the host supplies the file; scenes must fall back to a text wordmark (label) in the condensed font. When present, files are transparent PNG alpha masks in assets/logos/ and are drawn TINTED to a palette color (cream by default) so they sit consistently on teal.",
+  "_note": "Partner logos. Files in assets/logos/ are WHITE alpha masks (trimmed, transparent background), made from the host's uploads in logos/. Draw them TINTED to a palette color (cream by default; e.g. draw the mask to an offscreen canvas, then globalCompositeOperation='source-in' + fillRect with the color). 'file' null = no logo available: use a clean text wordmark (display) in the condensed font. Keep logos unaltered otherwise (no stretching, no recoloring beyond the single tint, no effects).",
   "logos": [
-    { "id": "revolutionva", "role": "host", "label": "RevolutionVA", "display": "REVOLUTION VA", "file": "assets/img/revolutionva-logo-cream.png", "kind": "mark" },
-    { "id": "ai-collective", "role": "sponsor", "label": "The AI Collective Hampton Roads", "display": "THE AI COLLECTIVE HAMPTON ROADS", "file": null, "kind": "wordmark" },
-    { "id": "757-makerspace", "role": "venue", "label": "757 Makerspace", "display": "757 MAKERSPACE", "file": null, "kind": "badge" },
-    { "id": "hacktoberfest", "role": "program", "label": "Hacktoberfest", "display": "HACKTOBERFEST", "file": null, "kind": "wordmark" },
-    { "id": "mlh", "role": "program", "label": "Major League Hacking", "display": "MLH", "file": null, "kind": "wordmark" },
-    { "id": "dev", "role": "program", "label": "DEV", "display": "DEV", "file": null, "kind": "wordmark" },
-    { "id": "digitalocean", "role": "program", "label": "DigitalOcean", "display": "DIGITALOCEAN", "file": null, "kind": "wordmark" },
-    { "id": "google-deepmind", "role": "challenge", "label": "Google DeepMind", "display": "GOOGLE DEEPMIND", "file": null, "kind": "wordmark" }
+    {
+      "id": "revolutionva",
+      "role": "host",
+      "label": "RevolutionVA",
+      "display": "REVOLUTION VA",
+      "file": "assets/logos/revolutionva.png",
+      "kind": "lockup (bird + REVOLUTION VA wordmark); mark = bird only, pre-tinted cream",
+      "mark": "assets/img/revolutionva-logo-cream.png"
+    },
+    {
+      "id": "ai-collective",
+      "role": "sponsor",
+      "label": "The AI Collective Hampton Roads",
+      "display": "THE AI COLLECTIVE HAMPTON ROADS",
+      "file": "assets/logos/ai-collective.png",
+      "kind": "lockup (C mark + \"The AI Collective / HAMPTON ROADS\"); horizontal file, vertical alt for 9:16",
+      "fileVertical": "assets/logos/ai-collective-vertical.png"
+    },
+    {
+      "id": "757-makerspace",
+      "role": "venue",
+      "label": "757 Makerspace",
+      "display": "757 MAKERSPACE",
+      "file": "assets/logos/757-makerspace.png",
+      "kind": "round badge (228px source: keep display height <= ~220px)"
+    },
+    {
+      "id": "hacktoberfest",
+      "role": "program",
+      "label": "Hacktoberfest",
+      "display": "HACKTOBERFEST",
+      "file": null,
+      "kind": "wordmark"
+    },
+    {
+      "id": "mlh",
+      "role": "program",
+      "label": "Major League Hacking",
+      "display": "MLH",
+      "file": "assets/logos/mlh.png",
+      "kind": "wordmark (MLH + MAJOR LEAGUE HACKING)"
+    },
+    {
+      "id": "dev",
+      "role": "program",
+      "label": "DEV",
+      "display": "DEV",
+      "file": "assets/logos/dev.png",
+      "kind": "badge (solid rounded square with DEV knocked out)"
+    },
+    {
+      "id": "digitalocean",
+      "role": "program",
+      "label": "DigitalOcean",
+      "display": "DIGITALOCEAN",
+      "file": null,
+      "kind": "wordmark"
+    },
+    {
+      "id": "google-deepmind",
+      "role": "challenge",
+      "label": "Google DeepMind",
+      "display": "GOOGLE DEEPMIND",
+      "file": null,
+      "kind": "wordmark"
+    }
   ]
 }
