@@ -478,7 +478,7 @@ const KID_WALK = [
   '..hhh..', '.hhhhh.', '.hssss.', '.sesek.', '..sss..', '.ttttt.', 'stttTts', '..tTt..', '..pp...', '.p..p..', 'oo..oo.',
 ];
 const KID_CHEER = [
-  's.....s', 't.hhh.t', 'thhhhht', '.hssss.', '.sesek.', '..sss..', '.ttttt.', '..tTt..', '..p.p..', '..p.p..', '.oo.oo.',
+  '......s', '..hhh.t', '.hhhhht', '.hsssst', '.sesekt', '..ssst.', '.ttttt.', 'stttTt.', '..tTt..', '..p.p..', '..p.p..', '.oo.oo.',
 ];
 const kidCache = new Map();
 /** Kid sprite (7x11). opts like world.person: { t, pose 'stand'|'walk'|'cheer', skin, hair, top, pants, flip } */
