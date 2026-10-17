@@ -17,7 +17,8 @@ const WORDS = ['FORK', 'TRAIN', 'SHIP', 'SHOW'];
 
 function times(c) {
   const h = chHits(c, 7);
-  if (h.length >= 4) return [0, h[1], h[2], h[3]];
+  // cuts land on the measured hits; SHOW (the last word) keeps at least ~9 frames even if the clip is cut short
+  if (h.length >= 4) return [0, h[1], h[2], Math.max(h[2] + 0.2, Math.min(h[3], c.dur - 0.3))];
   const bl = beatLen(c);
   const b0 = beatAfter(c, 0.05, 0);
   return [0, b0 + bl, b0 + bl * 2, b0 + bl * 3].map((x, i) => (i === 0 ? 0 : Math.min(x, c.dur - 0.15 * (4 - i))));

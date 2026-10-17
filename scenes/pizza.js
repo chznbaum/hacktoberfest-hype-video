@@ -153,7 +153,7 @@ export default {
     const pcx = X + Math.floor(B / 2), pcy = Y + Math.floor(B / 2);
     const tq = onTwos(t);
     const tOpen = k.b0;                  // reveal on the downbeat
-    // the slice pull lands before the 2-beat dither dissolve into C24 takes over the end of this clip
+    // the slice pull lands by beat 1.6 and then holds (wobbling cheese + steam) to the hard cut into the bridge (C24)
     const tPull0 = k.beat(0.5), tPull1 = k.beat(1.6);
 
     gingham(px, L.cloth);

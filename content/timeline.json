@@ -65,7 +65,7 @@
    "edits": [
     "social"
    ],
-   "from": "ch.1",
+   "from": "i.1",
    "to": "ch.8",
    "text": "SAT 10.17 \u00b7 HAMPTON \u00b7 FREE"
   }
@@ -104,11 +104,7 @@
    "scene": "calendar",
    "from": "v1.1",
    "to": "v1.1",
-   "variant": 1,
-   "in": {
-    "type": "stair",
-    "beats": 1
-   }
+   "variant": 1
   },
   {
    "id": "C06",
@@ -252,11 +248,7 @@
    "scene": "builders",
    "from": "br.1",
    "to": "br.2",
-   "variant": 1,
-   "in": {
-    "type": "dither",
-    "beats": 2
-   }
+   "variant": 1
   },
   {
    "id": "C25",

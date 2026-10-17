@@ -36,7 +36,9 @@ CHORUS = [
  ("5", 40.58, "From the sea to the stars (Hey!)", [42.82]),
  ("6", 43.05, "Hacktoberfest in the Seven-Five-Seven!", [43.13]),
  ("7", 45.70, "Fork it, train it, ship it, show it", [beat(76), beat(77), beat(78), beat(79)]),
- ("8", 47.85, "Hampton's 'bout to glow, and you know it!", []),
+ # ch.8 is cut on the downbeat (beat 80 = 48.21), not on the "Hampton's" pickup (47.85): that gives SHOW (the 4th
+ # fork/train/ship/show hit, at beat 79) a full beat on screen and lands the C15->C16 cut on the bar.
+ ("8", beat(80), "Hampton's 'bout to glow, and you know it!", []),
 ]
 CUES += [("ch." + n, "ch1", s, t, h) for n, s, t, h in CHORUS]
 CUES += [

@@ -2,7 +2,7 @@
 // Sunrise burst over the bay: the sun breaks the horizon on the downbeat with a ring of light, warm dawn bands rise,
 // then on "wake UP" (beat 1) the night world dither-dissolves into the key-art teal day, the lantern goes out and
 // the gulls that slept on the seawall take off. On "it's HACK-toberfest" (beat 2) the frame flashes and the
-// headline stamps in at its key-art position: the key art, alive. Beat 3 holds (the stair wipe to C05 runs here).
+// headline stamps in at its key-art position: the key art, alive. Beat 3 holds through the sung word (hard cut to C05).
 import { C } from '../lib/palette.js';
 import { clamp, ease, tween, onTwos, hash, quantize } from '../lib/motion.js';
 import { px, rect } from '../lib/pixel.js';
@@ -20,9 +20,11 @@ export default {
     const b = (i) => beatAfter(c, L.start, i);
     const tSun = b(0), tUp = b(1), tHack = b(2);
     const spb = Math.max(0.2, tUp - tSun);
-    // In the full 16:9 edit C05 stair-wipes in over C04's last beat. If "Hack-" falls inside that wipe, the headline
-    // lands one beat early (on "wake up") and flashes again on "Hack-"; in the social cut (hard cut) it lands on "Hack-".
-    const wiped = c.edit !== 'social' && tHack > c.dur - spb * 1.15;
+    // If this clip plays OUT through a wipe/dissolve (c.transitionOut, from the timeline) and "Hack-" falls inside it,
+    // the headline lands one beat early (on "wake up") and flashes again on "Hack-". With the hard cut both edits use
+    // now, it lands on "Hack-" and holds through the sung word.
+    const out = c.transitionOut;
+    const wiped = !!out && tHack > c.dur - (out.beats || 1) * spb * 1.15;
     const tHead = wiped ? tUp : tHack;
     const B = BAY[c.fmt];
     const horizon = B.waterY;
