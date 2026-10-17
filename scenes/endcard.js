@@ -10,7 +10,7 @@ import { C } from '../lib/palette.js';
 import { clamp, ease, tween, snap, onTwos, stamp as stampCurve } from '../lib/motion.js';
 import { water, headland, cloud, gull, sparkle, burst, haloDisc } from '../lib/world.js';
 import { text, textBox, measure, capRatio, chip, corners, plus, panel, anim, typeText, fitSize } from '../lib/text.js';
-import { loadEndcardContent, logo, tinted, fitBox, halfBeats, beatIdx, qrCard, brackets, partnerRow, partnerRowWidth, sailboat } from './_G-endcard.js';
+import { loadEndcardContent, allLogos, logo, tinted, fitBox, halfBeats, beatIdx, qrCard, brackets, partnerRow, partnerRowWidth, sailboat } from './_G-endcard.js';
 
 const R = Math.round;
 
@@ -258,16 +258,14 @@ function billing(h, t, c, o, T) {
       });
     } else {
       // 9:16: two rows, label column on the left
-      const hdr = 30, labW = 172, rowH = (o.h - pad * 2 - 18) / 2;
+      const hdr = 27, labW = 200, rowH = (o.h - pad * 2 - 18) / 2;
       const lx = o.x + pad, gx = o.x + pad + labW, gw = o.x + o.w - pad - gx;
       const y1 = o.y + pad, y2 = y1 + rowH + 18;
-      text(q, 'HOSTED', lx, y1 + rowH / 2 - hdr * 0.42, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
-      text(q, 'BY', lx, y1 + rowH / 2 + hdr * 0.62, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
+      text(q, 'HOSTED BY', lx, y1 + rowH / 2, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
       hostLockup(q, gx - 4, y1, gw, rowH);
       q.save(); q.fillStyle = C.teal; q.fillRect(o.x + pad, snap(y1 + rowH + 6), o.w - pad * 2, 6); q.restore();
       anim(q, t, { t0: T.sponsor, x: o.x + o.w / 2, y: y2 + rowH / 2, enter: 'stamp' }, (qq) => {
-        text(qq, 'SPONSORED', lx, y2 + rowH / 2 - hdr * 0.42, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
-        text(qq, 'BY', lx, y2 + rowH / 2 + hdr * 0.62, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
+        text(qq, 'SPONSORED BY', lx, y2 + rowH / 2, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
         sponsorLockup(qq, gx, y2, gw, rowH);
       });
     }
@@ -328,15 +326,15 @@ function partners(h, t, c, o, T) {
 }
 
 const groupsCache = {};
+/** Partner groups from logos.json roles (venue, then the global program), falling back to the brief's list. */
 function logoGroups(labels) {
   const key = labels ? 'l' : 'n';
   if (groupsCache[key]) return groupsCache[key];
-  const venue = [], program = [];
-  for (const id of ['757-makerspace', 'hacktoberfest', 'mlh', 'dev', 'digitalocean']) {
-    const { entry } = logo(id);
-    const role = entry ? entry.role : id === '757-makerspace' ? 'venue' : 'program';
-    (role === 'venue' ? venue : program).push(id);
-  }
-  groupsCache[key] = [{ label: labels ? 'VENUE' : null, ids: venue }, { label: labels ? 'GLOBAL PROGRAM' : null, ids: program }].filter((g) => g.ids.length);
+  const all = allLogos();
+  let venue = all.filter((l) => l.role === 'venue').map((l) => l.id);
+  let program = all.filter((l) => l.role === 'program').map((l) => l.id);
+  if (!venue.length) venue = ['757-makerspace'];
+  if (!program.length) program = ['hacktoberfest', 'mlh', 'dev', 'digitalocean'];
+  groupsCache[key] = [{ label: labels ? 'VENUE' : null, ids: venue }, { label: labels ? 'GLOBAL PROGRAM' : null, ids: program }];
   return groupsCache[key];
 }

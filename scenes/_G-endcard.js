@@ -5,8 +5,8 @@
 //    coral viewfinder brackets OUTSIDE the quiet zone (so the code stays decodable while they pulse)
 //  - beat helpers (half-beat grid from a cue start)
 import { C, RAMP } from '../lib/palette.js';
-import { clamp, ease, tween, snap, onTwos, hash, stamp as stampCurve } from '../lib/motion.js';
-import { rect, px as dot, sprite, drawSprite } from '../lib/pixel.js';
+import { clamp, snap, onTwos, hash } from '../lib/motion.js';
+import { rect, sprite, drawSprite } from '../lib/pixel.js';
 import { text, measure, capRatio, anim, fitSize } from '../lib/text.js';
 
 const R = Math.round;
@@ -54,6 +54,7 @@ export function logo(id) {
   return { entry, img, mark: G.images[id + '#mark'] || null, vimg: FORCE_PARTNERS === 'text' ? null : G.images[id + '#v'] || null };
 }
 export const qrData = () => G.qr;
+export const allLogos = () => G.logos;
 
 const tintCache = new Map();
 /** Image drawn as a flat-color silhouette (alpha mask tint) at device size w x h (cached). */
@@ -199,7 +200,7 @@ export function partnerItem(h, id, x, cy, H, { draw = true, color = C.cream, max
     // optical sizing: square/round badges a bit smaller than the row, wide wordmarks shorter
     const a = img.width / img.height;
     const kind = (entry && entry.kind) || '';
-    const hh = a < 1.3 ? H * 0.92 : a < 2.6 ? H * 0.78 : H * 0.62;
+    const hh = a < 1.3 ? H * 0.92 : a < 2.6 ? H * 0.78 : H * 0.68;
     const fb = fitBox(img, maxW, /badge/.test(kind) ? H * 0.92 : hh);
     if (draw) h.drawImage(tinted(img, fb.w, fb.h, color), R(x), R(cy - fb.h / 2));
     return fb.w;
@@ -259,4 +260,3 @@ export function partnerRowWidth(h, H, groups, o = {}) {
   return w;
 }
 
-export { R, dot, hash, ease, tween, stampCurve };
