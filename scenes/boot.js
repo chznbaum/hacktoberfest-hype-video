@@ -54,7 +54,7 @@ const LANTERN_Y = 6;
 function bios(F) {
   return [
     { s: 'HACKTOBERFEST BIOS', col: SCR.hot },
-    { s: 'MEM .... 757K', ok: true },
+    { s: 'AREA .... 757', ok: true },   // the area code (a fact), not an invented spec
     { s: `LOC: ${F.venue.cityState.toUpperCase()}` },
     { s: `DATE: ${F.date.weekdayShort} ${F.date.numericYear}` },
     { s: '> RUN HAMPTON.EXE', col: SCR.hot },

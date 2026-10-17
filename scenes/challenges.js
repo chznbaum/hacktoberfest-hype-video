@@ -15,8 +15,10 @@ const LAYOUT = {
   '16x9': { shelves: [{ y: 124, rail: 46, x0: -2, x1: 322, items: [[0, 32], [1, 96], [2, 160], [3, 224], [4, 288]], brackets: [63, 255] }] },
   '9x16': {
     shelves: [
-      { y: 152, rail: 78, x0: -2, x1: 182, items: [[0, 31], [1, 90], [2, 149]], brackets: [60, 119] },
-      { y: 236, rail: 182, x0: -2, x1: 182, items: [[3, 60], [4, 120]], brackets: [16, 163] },
+      // shelf 1 sits higher (heading moved up into the slack under the safe top) so shelf 1's two-line names
+      // (GLORIOUSLY / OVERENGINEERED) clear shelf 2's light rail, and shelf 2's names end above the 9:16 UI zone
+      { y: 138, rail: 66, x0: -2, x1: 182, items: [[0, 31], [1, 90], [2, 149]], brackets: [60, 119], nameDy: 15 },
+      { y: 222, rail: 175, x0: -2, x1: 182, items: [[3, 60], [4, 120]], brackets: [16, 163], nameDy: 13 },
     ],
   },
 };
@@ -125,7 +127,7 @@ export default {
 
     // ---- type
     const s = c.safe;
-    const head = c.fmt === '9x16' ? { size: 128, x: s.x0, y: 372 } : { size: 140, x: s.x0, y: 206 };
+    const head = c.fmt === '9x16' ? { size: 128, x: s.x0, y: 332 } : { size: 140, x: s.x0, y: 206 };
     const t0h = k.start;
     const b5 = lbl(hi, t, t0h, '5', head.x, head.y, { role: 'display', size: head.size, color: C.sky });
     lbl(hi, t, t0h, 'CHALLENGES', b5.x1 + head.size * 0.16, head.y, { role: 'display', size: head.size, color: C.cream });
@@ -145,7 +147,7 @@ export default {
         let cx = x * P;
         const half = Math.max(...lines.map((ln) => measure(hi, ln, { ...o, size }).w)) / 2;
         cx = clamp(cx, s.x0 + half, s.x1 - half);
-        const y0 = (sh.y + 15) * P + size * 0.72;
+        const y0 = (sh.y + (sh.nameDy ?? 15)) * P + size * 0.72;
         lines.forEach((ln, j) => lbl(hi, t, lands[i] + 0.02, ln, cx, y0 + j * size * 1.02, { size, weight: 700, align: 'center', color: C.cream }));
       }
     }

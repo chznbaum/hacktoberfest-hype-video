@@ -7,7 +7,7 @@ import { C } from '../lib/palette.js';
 import { clamp, ease, tween, onTwos, hash, quantize } from '../lib/motion.js';
 import { px, rect } from '../lib/pixel.js';
 import { sun, gull, haloDisc, sparkle } from '../lib/world.js';
-import { text, flash, corners, plus, fitSize, anim, textBox, eyebrow } from '../lib/text.js';
+import { text, flash, corners, plus, fitSize, anim, textBox, eyebrow, stampFit } from '../lib/text.js';
 import { bayWorld, beatAfter, cue, ditherOver, perchedGullSpots, BAY } from './_A-common.js';
 
 const R = Math.round;
@@ -87,7 +87,8 @@ export default {
 function stampHead(hi, t, t0, x, y, size) {
   const capTop = y;
   const bx = textBox(hi, 'Hacktoberfest', x, capTop, { role: 'display', size, baseline: 'cap-top' });
-  anim(hi, t, { t0, x: bx.cx, y: bx.cy, enter: 'stamp' }, (h) => text(h, 'Hacktoberfest', x, capTop, { role: 'display', size, baseline: 'cap-top' }));
+  const sf = stampFit(hi, bx);
+  anim(hi, t, { t0, x: sf.x, from: sf.from, y: bx.cy, enter: 'stamp' }, (h) => text(h, 'Hacktoberfest', x, capTop, { role: 'display', size, baseline: 'cap-top' }));
 }
 
 /** Gulls that have left their perch (staggered take-off starting at tUp). */

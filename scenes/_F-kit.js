@@ -11,7 +11,7 @@
 import { C, RAMP } from '../lib/palette.js';
 import { clamp, hash, onTwos, ease, tween, mod, FPS } from '../lib/motion.js';
 import { makeCanvas, rect, px, hline, vline, dither } from '../lib/pixel.js';
-import { text, textBox, anim, measure } from '../lib/text.js';
+import { text, textBox, anim, measure, stampFit } from '../lib/text.js';
 
 export const R = Math.round;
 
@@ -299,7 +299,8 @@ export function lbl(hi, t, t0, str, x, y, o = {}) {
   const opts = { role: o.role || 'cond', size: o.size || 100, weight: o.weight || 800, color: o.color || C.cream, align: o.align || 'left', tracking: o.tracking ?? 0.01, shadow: o.shadow };
   const s = o.keepCase ? String(str) : String(str).toUpperCase();
   const bx = textBox(hi, s, x, y, opts);
-  anim(hi, t, { t0, t1: o.t1, x: bx.cx, y: bx.cy, enter: o.enter || 'stamp', exit: o.exit || 'cut', dist: o.dist, dur: o.dur }, (h) => text(h, s, x, y, opts));
+  const enter = o.enter || 'stamp', sf = enter === 'stamp' ? stampFit(hi, bx) : { x: bx.cx };
+  anim(hi, t, { t0, t1: o.t1, x: sf.x, from: sf.from, y: bx.cy, enter, exit: o.exit || 'cut', dist: o.dist, dur: o.dur }, (h) => text(h, s, x, y, opts));
   return bx;
 }
 /** Greedy word wrap of str into lines no wider than maxW at the given type opts. */

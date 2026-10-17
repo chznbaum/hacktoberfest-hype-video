@@ -9,7 +9,7 @@
 import { C } from '../lib/palette.js';
 import { clamp, ease, tween, snap, onTwos, stamp as stampCurve } from '../lib/motion.js';
 import { water, headland, cloud, gull, sparkle, burst, haloDisc } from '../lib/world.js';
-import { text, textBox, measure, capRatio, chip, corners, plus, panel, anim, typeText, fitSize } from '../lib/text.js';
+import { text, textBox, measure, capRatio, chip, corners, plus, panel, anim, typeText, fitSize, stampFit } from '../lib/text.js';
 import { loadEndcardContent, allLogos, logo, tinted, fitBox, halfBeats, beatIdx, qrCard, brackets, partnerRow, partnerRowWidth, sailboat } from './_G-endcard.js';
 
 const R = Math.round;
@@ -39,7 +39,7 @@ const BASE_H = {
   info: { x: 60, y0: 870, y1: 750, size: 44 },            // y0 while it holds, y1 after it makes room for partners
   plus: { x: 1788, y: 192 },
   billing: { x: 1194, y: 834, w: 636, h: 192, rows: false },
-  partners: { x: 66, cy: 966, H: 66, maxRight: 1160, labels: true, panel: null },
+  partners: { x: 162, cy: 966, H: 66, maxRight: 1160, labels: true, panel: null },   // x = info text column (inside the 96 px margin)
 };
 const BASE_V = {
   water: { x: 0, y: 190, fadeW: 40, fade: 'none' },
@@ -48,13 +48,13 @@ const BASE_V = {
   clouds: [{ kind: 'small', x: 98, y: 98, v: 0.4 }, { kind: 'wisp', x: 128, y: 39, v: 0.3 }],
   gulls: [{ x: 118, y: 106, p: 0 }, { x: 127, y: 114, p: 0.4 }, { x: 172, y: 130, p: 0.7 }],
   qr: { x: 14, y: 184 },
-  qrChip: { x: 80, y: 1040, size: 30, align: 'left' },
+  qrChip: { x: 80, y: 1034, size: 40, align: 'left' },   // the CTA phone viewers actually read: label-size, not small
   eyebrow: { x: 80, y: 276, size: 32, tracking: 0.14 },
   chip: { x: 80, y: 336, size: 36, enter: 'slide-right' },
   title: { x: 76, y: 400, size: 0, restamp: 1.045 },                      // size 0 = fit "Hacktoberfest" to the safe width
   info: { x: 80, y0: 0, y1: 0, size: 40 },                // y = under the title (computed)
   plus: { x: 1014, y: 566 },
-  billing: { x: 396, y: 1150, w: 604, h: 248, rows: true },
+  billing: { x: 396, y: 1088, w: 604, h: 310, rows: true },  // as tall as the QR block
   partners: { x: 80, cy: 1455, H: 52, maxRight: 1000, labels: false, panel: { x: 80, y: 1410, w: 920, h: 90 } },
 };
 const layoutCache = new Map();
@@ -163,20 +163,23 @@ function titleLive(h, t, c, o, T) {
   const { size, x } = o;
   const [b1, b2, b3] = o.b;
   const cap = o.cap;
-  // line 1 re-stamps on "Hacktoberfest!" (out.4)
-  const re = t >= T.hit4 ? stampCurve(t, T.hit4, { from: o.restamp || 1.08 }) : null;
   const l1 = textBox(h, F.title.line1, x, b1, { role: 'display', size });
-  anim(h, t, { t0: T.title[0], x: l1.cx, y: l1.cy, enter: 'stamp' }, (q) => {
-    if (re && re.scale !== 1) { q.translate(l1.cx, l1.cy); q.scale(re.scale, re.scale); q.translate(-l1.cx, -l1.cy); }
+  // stamps (and the line-1 re-stamp on "Hacktoberfest!", out.4) keep their overshoot inside the margins
+  const s1 = stampFit(h, l1), r1 = stampFit(h, l1, o.restamp || 1.08);
+  const re = t >= T.hit4 ? stampCurve(t, T.hit4, { from: r1.from }) : null;
+  anim(h, t, { t0: T.title[0], x: s1.x, from: s1.from, y: l1.cy, enter: 'stamp' }, (q) => {
+    if (re && re.scale !== 1) { q.translate(r1.x, l1.cy); q.scale(re.scale, re.scale); q.translate(-r1.x, -l1.cy); }
     text(q, F.title.line1, x, b1, { role: 'display', size });
   });
   const l2 = textBox(h, F.title.line2, x, b2, { role: 'display', size });
-  anim(h, t, { t0: T.title[1], x: l2.cx, y: l2.cy, enter: 'stamp' }, (q) => text(q, F.title.line2, x, b2, { role: 'display', size }));
+  const s2 = stampFit(h, l2);
+  anim(h, t, { t0: T.title[1], x: s2.x, from: s2.from, y: l2.cy, enter: 'stamp' }, (q) => text(q, F.title.line2, x, b2, { role: 'display', size }));
   // line 3: "in the " + 7 / 5 / 7 (each digit bumps + flashes cream on its chant hit)
   const l3s = F.title.line3, m = l3s.match(/^(.*?)(\d+)\s*$/);
   const pre = m ? m[1] : l3s, digits = m ? m[2] : '';
   const l3 = textBox(h, l3s, x, b3, { role: 'display', size });
-  anim(h, t, { t0: T.title[2], x: l3.cx, y: l3.cy, enter: 'stamp' }, (q) => {
+  const s3 = stampFit(h, l3);
+  anim(h, t, { t0: T.title[2], x: s3.x, from: s3.from, y: l3.cy, enter: 'stamp' }, (q) => {
     text(q, pre, x, b3, { role: 'display', size, color: C.sky });
     let dx = x + measure(q, pre, { role: 'display', size }).w;
     [...digits].forEach((d, i) => {
@@ -257,16 +260,19 @@ function billing(h, t, c, o, T) {
         sponsorLockup(qq, sx, yL, cw, cellH);
       });
     } else {
-      // 9:16: two rows, label column on the left
-      const hdr = 27, labW = 200, rowH = (o.h - pad * 2 - 18) / 2;
-      const lx = o.x + pad, gx = o.x + pad + labW, gw = o.x + o.w - pad - gx;
-      const y1 = o.y + pad, y2 = y1 + rowH + 18;
-      text(q, 'HOSTED BY', lx, y1 + rowH / 2, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
-      hostLockup(q, gx - 4, y1, gw, rowH);
-      q.save(); q.fillStyle = C.teal; q.fillRect(o.x + pad, snap(y1 + rowH + 6), o.w - pad * 2, 6); q.restore();
-      anim(q, t, { t0: T.sponsor, x: o.x + o.w / 2, y: y2 + rowH / 2, enter: 'stamp' }, (qq) => {
-        text(qq, 'SPONSORED BY', lx, y2 + rowH / 2, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-middle' });
-        sponsorLockup(qq, gx, y2, gw, rowH);
+      // 9:16: key-art panel structure, header ABOVE each lockup so the lockups get the full panel width; the
+      // sponsor row gets the most height because its lockup carries the smallest type (legible on a phone)
+      const pv = 24, hdr = 30, capH = capRatio(q, 'cond', 800) * hdr, gapH = 10, sep = 18, hostH = 62;
+      const lx = o.x + pad, gw = o.w - pad * 2;
+      const y1 = o.y + pv, yL1 = y1 + capH + gapH;
+      const y2 = yL1 + hostH + sep, yL2 = y2 + capH + gapH;
+      const spH = o.y + o.h - pv + 4 - yL2;
+      text(q, 'HOSTED BY', lx, y1, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-top' });
+      hostLockup(q, lx - 4, yL1, gw, hostH);
+      q.save(); q.fillStyle = C.teal; q.fillRect(o.x + pad, snap(yL1 + hostH + sep / 2 - 3), o.w - pad * 2, 6); q.restore();
+      anim(q, t, { t0: T.sponsor, x: o.x + o.w / 2, y: (y2 + yL2 + spH) / 2, enter: 'stamp' }, (qq) => {
+        text(qq, 'SPONSORED BY', lx, y2, { role: 'cond', size: hdr, weight: 800, baseline: 'cap-top' });
+        sponsorLockup(qq, lx, yL2, gw, spH);
       });
     }
   });

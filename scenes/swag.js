@@ -1,6 +1,6 @@
 // scenes/swag.js (owner F) C22, cue v2.7 "T-shirts and stickers and swag in the mix".
 // The hack table, seen from across it: a laptop (lid toward us), a sticker sheet pinned to the wall, an empty hook.
-// A coral 757 tee drops onto the hook with the vocal ("T-shirts"); from the next beat, stickers peel off the sheet
+// A coral </> tee drops onto the hook with the vocal ("T-shirts"); from the next beat, stickers peel off the sheet
 // and SLAP onto the laptop lid on eighth notes (heart, 757, </>, lighthouse, pumpkin); SWAG stamps one beat before
 // it is sung. Never implies everyone gets a shirt: one shirt on a hook, no counts.
 import { C, RAMP } from '../lib/palette.js';
@@ -31,9 +31,10 @@ function teeArt() {
       if (d < 1) p.clear(x, y);
       else if (d < 1.45) p.put(x, y, RF[1]);
     }
-    // print: 757 in cream with a tealDark shadow, a little wave stripe under it
-    pixelText(c, '757', 23, 15, RF[1], { font: 'small', align: 'center' });
-    pixelText(c, '757', 22, 14, C.cream, { font: 'small', align: 'center' });
+    // print: a generic </> in cream with a shadow, a little wave stripe under it (no event-specific shirt design is
+    // confirmed, so the tee doesn't claim one)
+    pixelText(c, '</>', 23, 15, RF[1], { font: 'small', align: 'center' });
+    pixelText(c, '</>', 22, 14, C.cream, { font: 'small', align: 'center' });
     for (let x = 16; x <= 29; x++) p.put(x, 23 + (x % 4 < 2 ? 0 : 1), W[4]);
   });
 }
