@@ -7,7 +7,7 @@ import { clamp, onTwos, frameIndex, ease, tween } from '../lib/motion.js';
 import { rect } from '../lib/pixel.js';
 import { text, textBox, anim, eyebrow, measure, corners } from '../lib/text.js';
 import { water, seawall, person, cloud, gull, sparkle, burst } from '../lib/world.js';
-import { clock, aiSpark, lightDisc, personX, R } from './_C-kit.js';
+import { clock, aiSpark, personX, R } from './_C-kit.js';
 
 const PANTS = ['#173B38', '#2B3A4A', '#4A3B2C', '#214D49'];
 // inclusive row: skin tones 0-5, hair styles incl. grey hair, a hijab, a wheelchair user
@@ -34,15 +34,20 @@ const SPARK_COLS = [
 
 const GEO = {
   '16x9': {
-    rows: [{ base: 149, xs: [22, 46, 70, 94, 120, 146, 172, 198, 224, 250, 274, 298] }],
-    wall: { y: 149, h: 9 }, waterY: 158, clouds: [[34, 22, 'twoTone'], [252, 30, 'big'], [140, 12, 'wisp']],
+    rows: [
+      { base: 140, xs: [20, 46, 72, 98, 124, 150, 176, 202, 228, 254, 280, 305] },
+      { base: 153, xs: [9, 33, 59, 85, 111, 137, 163, 189, 215, 241, 267, 293, 314] },
+    ],
+    wall: { y: 153, h: 9 }, waterY: 162, deck: 132,
+    clouds: [[34, 22, 'twoTone'], [262, 34, 'big'], [8, 92, 'wisp']], gulls: [[256, 70], [276, 78]],
   },
   '9x16': {
     rows: [
       { base: 234, xs: [24, 54, 84, 114, 144] },
       { base: 246, xs: [12, 39, 66, 93, 120, 147, 170] },
     ],
-    wall: { y: 246, h: 10 }, waterY: 256, deck: 224, clouds: [[16, 36, 'twoTone'], [120, 22, 'small'], [104, 178, 'wisp']],
+    wall: { y: 246, h: 10 }, waterY: 256, deck: 224,
+    clouds: [[26, 64, 'twoTone'], [126, 22, 'small'], [104, 196, 'wisp']], gulls: [[116, 184], [134, 192]],
   },
 };
 
@@ -60,8 +65,7 @@ export default {
 
     // ---- world: day sky (flat teal), clouds + gulls, bay water, seawall promenade
     for (const [x, y, kind] of G.clouds) cloud(p, x + Math.floor(onTwos(t) * 2), y, { kind });
-    gull(p, R(PW * 0.62 + t * 9), c.fmt === '9x16' ? 150 : 40, t, { phase: 0.3 });
-    gull(p, R(PW * 0.72 + t * 8), c.fmt === '9x16' ? 160 : 50, t + 0.2, { phase: 0.7 });
+    G.gulls.forEach(([gx, gy], i) => gull(p, R(gx + t * (9 - i)), gy - (frameIndex(t + i, 3, 2) ? 1 : 0), t + i * 0.2, { phase: 0.3 + i * 0.4 }));
     water(p, t, { y: G.waterY, h: g.PH - G.waterY, fade: 'none' });
     seawall(p, 0, G.wall.y, PW, G.wall.h, { seed: 4 });
     if (G.deck) {
@@ -75,7 +79,7 @@ export default {
 
     // ---- people + sparks (back row first)
     const all = [];
-    G.rows.forEach((row, ri) => row.xs.forEach((x) => all.push({ x, base: row.base, ri })));
+    G.rows.forEach((row, ri) => row.xs.forEach((x, j) => all.push({ x, base: row.base, ri, look: (j + ri * 6) % CAST.length })));
     // wave order = left to right across both rows
     const order = all.map((m, i) => ({ ...m, i })).sort((a, b) => a.x - b.x);
     const N = order.length;
@@ -85,7 +89,7 @@ export default {
     for (const ri of [0, 1]) {
       for (const m of all.map((mm, i) => ({ ...mm, i, tOn: order.find((o) => o.i === i).tOn }))) {
         if (m.ri !== ri) continue;
-        const look = CAST[m.i % CAST.length];
+        const look = CAST[m.look];
         const lit = t >= m.tOn;
         const pose = cheer ? 'cheer' : lit ? 'wave' : 'stand';
         const flip = !lit && m.i % 3 === 1;
@@ -100,7 +104,6 @@ export default {
         const up = cheer ? R(ease.outCubic(clamp((t - tCheer) / 0.25)) * 6) : 0;
         const sx = cheer ? m.x + (look.kind === 'wheelchair' ? 1 : 0) : handX;
         const sy = m.base - 22 - up + (frameIndex(t + m.i * 0.2, 4, 2) ? 0 : -1);
-        lightDisc(p, sx, sy, cheer ? 5 : 4, sc.add);
         aiSpark(p, sx, sy, t, { size: age < 0.067 ? 'tiny' : 'small', core: sc.core, rim: sc.rim, hot: sc.hot, add: sc.add, glow: 0 });
         if (age < 0.35) burst(p, handX, m.base - 21, age, { n: 8, speed: 26, gravity: 20, seed: 11 + m.i, life: 0.35, colors: [sc.core, C.cream] });
         if (cheer) sparkle(p, sx + (m.i % 2 ? 5 : -5), sy - 3, t, tCheer + (m.i % 5) * 0.05, { size: 2, dur: 0.4, color: sc.core });

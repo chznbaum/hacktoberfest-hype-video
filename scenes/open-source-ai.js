@@ -7,7 +7,8 @@ import { clamp, hash, onTwos, frameIndex, ease, tween } from '../lib/motion.js';
 import { makeCanvas, rect, px, hline, vline, poly } from '../lib/pixel.js';
 import { chip, anim, corners, plus } from '../lib/text.js';
 import { sparkle, burst } from '../lib/world.js';
-import { clock, aiSpark, capH, R } from './_C-kit.js';
+import { clock, aiSpark, lightDisc, capH, R } from './_C-kit.js';
+import { makeCanvas as mk } from '../lib/pixel.js';
 
 // ---------------------------------------------------------------- glyph art (stair-stepped, cached)
 const glyphCache = new Map();
@@ -56,6 +57,18 @@ function glyph(kind, h, w, sw, step = 2) {
   return out;
 }
 
+/** Cream silhouette of a glyph canvas (flash frame), cached on the glyph. */
+function flashOf(gl) {
+  if (gl.flash) return gl.flash;
+  const { canvas, ctx } = mk(gl.W, gl.H);
+  ctx.drawImage(gl.canvas, 0, 0);
+  ctx.globalCompositeOperation = 'source-in';
+  ctx.fillStyle = C.cream;
+  ctx.fillRect(0, 0, gl.W, gl.H);
+  gl.flash = canvas;
+  return canvas;
+}
+
 // ---------------------------------------------------------------- light
 /** Rotating sunburst: n flat additive wedges around (cx, cy), radius r, on twos. */
 function rays(ctx, cx, cy, r, t, { n = 10, k = 1, add = '#0F120C' } = {}) {
@@ -98,12 +111,8 @@ export default {
       const open = ease.outCubic(clamp(age / 0.22));
       rays(p, cx, cy, c.fmt === '9x16' ? 84 : 100, t, { n: 10, k: open, add: '#0C0E09' });
       rays(p, cx, cy, 46, t * -1.3, { n: 8, k: open, add: '#100F08' });
-      // crack of light where the slash was (first frames)
-      if (age < 0.2) {
-        const cw = 2 + R(age * 120);
-        rect(p, cx - (cw >> 1), cy - (G.h >> 1), cw, G.h, RAMP.glow[4]);
-        rect(p, cx - (cw >> 2), cy - (G.h >> 1), Math.max(1, cw >> 1), G.h, C.cream);
-      }
+      // flash of light where the slash was (first frames): flat additive bursts, no gradients
+      if (age < 0.16) { lightDisc(p, cx, cy, R(18 + age * 160), '#1C1A10'); lightDisc(p, cx, cy, R(10 + age * 80), '#262214'); }
     }
 
     // ---- open weights: shimmering cells rain from the spark into the download bar
@@ -117,7 +126,7 @@ export default {
         const colX = cx - 26 + i * 6;
         for (let j = 0; j < 3; j++) {
           const sp = 70 + hash(i, j, 3) * 30;
-          const y = cy + 20 + Math.floor(((tq * sp + hash(i, j, 9) * 40) % (by - cy - 24)) / 4) * 4;
+          const y = cy + 24 + Math.floor(((tq * sp + hash(i, j, 9) * 40) % (by - cy - 28)) / 4) * 4;
           const tw = frameIndex(tq + i * 0.13 + j * 0.3, 15, 3);
           const col = [C.sky, C.cream, C.gold][(tw + i + j) % 3];
           rect(p, colX, R(y), 2, 2, col);
@@ -150,12 +159,12 @@ export default {
       const size = seq[Math.min(2, Math.floor(age * 15))];
       const yy = cy + (age < 0.2 ? R(8 - age * 40) : 0) + bob;
       const blink = frameIndex(t + 0.4, 1.6, 8) === 0;
-      aiSpark(p, cx, yy, t, { size, glow: 1, blink });
+      aiSpark(p, cx, yy, t, { size, glow: 1, blink, r: c.fmt === '9x16' ? 20 : 22 });
       if (size === 'big') {
         for (let i = 0; i < 3; i++) {
           const a = onTwos(t) * 3.2 + (i * Math.PI * 2) / 3;
-          const ox = R(Math.cos(a) * 22), oy = R(Math.sin(a) * 8);
-          if (oy < 0 && Math.abs(ox) < 8) continue; // passes behind the spark
+          const ox = R(Math.cos(a) * 30), oy = R(Math.sin(a) * 9);
+          if (oy < 0 && Math.abs(ox) < 12) continue; // passes behind the spark
           const col = [C.sky, C.coral, C.cream][i];
           rect(p, cx + ox - 1, yy + oy, 3, 1, col); rect(p, cx + ox, yy + oy - 1, 1, 3, col);
         }
@@ -166,17 +175,20 @@ export default {
     // ---- the doors: < and > slide apart on pixel steps (anticipation squeeze first), slash vanishes into the crack
     const open = t < tOpen ? 0 : ease.outBack(clamp((t - tOpen) / 0.22));
     const pre = t < tOpen && t > tOpen - 0.1 ? -2 : 0;      // tiny inward squeeze before the open
-    const inK = tween(t, tIn, 0.12, ease.outBack);
-    const hh = Math.max(8, R(G.h * Math.min(1.08, inK)));
+    // stamp-in on whole sprite steps (recognisable from frame 0): 0.7 -> 1.08 -> 1.04 -> 1
+    const inK = [0.7, 0.7, 1.08, 1.08, 1.04][Math.min(4, Math.max(0, Math.floor((t - tIn) * 30)))] ?? 1;
+    const hh = R(G.h * (t - tIn > 0.17 ? 1 : inK));
     const gL = glyph('<', hh, G.w, G.sw), gR = glyph('>', hh, G.w, G.sw);
     const off = G.gap + R(G.open * open) + pre;
     const pulseBump = R(c.pulse(t, 0.2) * 1.5);
     const yTop = cy - (hh >> 1);
     p.drawImage(gL.canvas, R(cx - off - gL.w - G.sw) - pulseBump, yTop);
     p.drawImage(gR.canvas, R(cx + off) + pulseBump, yTop);
-    if (t < tOpen) {
+    if (t < tOpen + 0.067) {
+      // the slash; on the open it flashes cream for two frames, then it is gone (light takes its place)
       const gS = glyph('/', hh, R(G.w * 0.62), G.sw - 2, 2);
-      p.drawImage(gS.canvas, R(cx - gS.w / 2 - gS.sw / 2), yTop);
+      const img = t < tOpen ? gS.canvas : flashOf(gS);
+      p.drawImage(img, R(cx - gS.w / 2 - gS.sw / 2), yTop);
     }
     // sparkles on the bracket tips once open
     if (t >= tOpen) {
