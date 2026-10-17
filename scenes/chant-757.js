@@ -12,7 +12,7 @@ import { bayWorld, beatT, hitsFor, passed, digitCanvas, digitSize, splash, rippl
 
 const R = Math.round;
 const FALL = 0.13;
-const WATER_V = 206; // 9:16 bay line: keeps the numerals inside the social safe area // seconds of free fall before each impact (4 frames)
+const WATER_V = 198; // 9:16 bay line: keeps the numerals inside the social safe area // seconds of free fall before each impact (4 frames)
 
 export default {
   id: 'chant-757',
@@ -103,7 +103,7 @@ function drawDigit(g, t, c, L, i, hit, hits) {
     x = slot.x - R((Sq.w - S.w) / 2);
     y = slot.base - Sq.h + (y - (slot.base - S.h));
   }
-  const cv = digitCanvas(ch, bw, bh, L.depth, 'cream');
+  const cv = digitCanvas(ch, bw, bh, L.depth, k >= 0 && k < 1 / 30 ? 'flash' : 'cream');
   // in the bay: hide the part under the water line (16:9 and the bottom digit in 9:16) with a little foam lip
   const inWater = true;
   if (inWater && k >= 0) {
@@ -117,7 +117,7 @@ function drawDigit(g, t, c, L, i, hit, hits) {
   if (k >= 0) {
     const base = inWater ? L.waterY + 1 : slot.base;
     if (inWater) {
-      splash(ctx, x, base, cv.width, k, { seed: 3 + i * 7, n: v ? 22 : 30 });
+      splash(ctx, x, base, cv.width, k, { seed: 3 + i * 7, n: v ? 34 : 44, jet: v ? 1.2 : 1.4 });
       ripple(ctx, x + cv.width / 2, base + 1, cv.width, k, { speed: v ? 60 : 110 });
     } else {
       dustPuffs(ctx, x, x + cv.width, slot.base + 1, k, { life: 0.45 });

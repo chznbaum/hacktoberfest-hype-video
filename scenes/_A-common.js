@@ -98,6 +98,13 @@ export function bayWorld(g, t, c, o = {}) {
     const sOy = R(oy * 0.45);
     stars(ctx, t, { x: 0, y: -90 + sOy, w: PW, h: L.waterY + 80, seed: o.starSeed ?? 5, show: o.starShow ?? 1, count: R((PW * (L.waterY + 80)) / 230) });
   }
+  // keep a calm patch of sky behind small type (re-paint the sky bands there, no stars)
+  if (o.clearRect) {
+    const [cx, cy, cw, ch] = o.clearRect;
+    ctx.save(); ctx.beginPath(); ctx.rect(cx, cy, cw, ch); ctx.clip();
+    skyCam(ctx, { preset: o.skyPreset || (tod === 'night' ? 'night' : 'day'), top: horizon - (c.fmt === '9x16' ? 300 : 175), bottom: horizon, to: o.skyTo, k: o.skyK });
+    ctx.restore();
+  }
   const M = o.moonAt || L.moon;
   if (o.moon !== false && M) moon(ctx, M.x, M.y + R(oy * 0.6), M.r || 7, { phase: 0.45, halo: true });
   if (o.clouds !== false) for (const cl of o.cloudsAt || L.clouds) cloud(ctx, R(cl.x + ((tq * cl.v) % 40)), cl.y + R(oy * 0.7), { kind: cl.kind, tod: tod === 'night' ? 'night' : 'day' });
@@ -230,7 +237,9 @@ export function digitCanvas(ch, bw, bh, depth = 4, pal = 'cream') {
     const on = (x, y) => y >= 0 && y < rows && x >= 0 && x < cols && g[y][x] === '#';
     const P = pal === 'sky'
       ? { face: C.sky, lit: '#A5CFE8', top: '#C1E2F2', seam: '#5A9CC6', shade: '#3F8ABD', ex: ['#214D49', '#2B6A80'] }
-      : { face: C.cream, lit: '#FDF7EA', top: '#FDF7EA', seam: '#E6D9C1', shade: '#B9B19C', ex: ['#2B6A80', '#3F8ABD', C.sky] };
+      : pal === 'flash'
+        ? { face: '#FDF7EA', lit: '#FDF7EA', top: '#FDF7EA', seam: '#FDF7EA', shade: '#F2EADA', ex: ['#C1E2F2', '#C1E2F2', '#FDF7EA'] }
+        : { face: C.cream, lit: '#FDF7EA', top: '#FDF7EA', seam: '#E6D9C1', shade: '#B9B19C', ex: ['#2B6A80', '#3F8ABD', C.sky] };
     // extrusion: far -> near
     for (let d = depth; d >= 1; d--) {
       const col = d === depth ? P.ex[0] : d >= depth - 1 && P.ex.length > 2 ? P.ex[1] : P.ex[P.ex.length - 1];
@@ -264,6 +273,18 @@ export function splash(ctx, x0, y, w, k, o = {}) {
   const n = o.n ?? 26, seed = o.seed ?? 1, gr = o.gravity ?? 260;
   const cols = o.colors || ['#C1E2F2', '#A5CFE8', C.cream, C.sky, '#79AED3'];
   const kq = onTwos(k);
+  // spray jets: sheets of water thrown up at both sides of the impact for the first few frames
+  if (kq < 0.2) {
+    const hgt = R((kq < 0.07 ? 7 : 12) * (o.jet ?? 1)), f = kq / 0.2;
+    for (let side = 0; side < 2; side++) {
+      const jx = side ? x0 + w + 1 : x0 - 4;
+      for (let j = 0; j < 4; j++) {
+        const hh = R(hgt * (1 - j * 0.22) * (1 - f * 0.5));
+        const xx = side ? jx + j : jx + 3 - j;
+        for (let yy = 0; yy < hh; yy++) if ((yy + j) % 3 !== 2 || f < 0.3) px(ctx, xx, y - yy, yy > hh - 3 ? C.cream : j % 2 ? '#A5CFE8' : '#C1E2F2');
+      }
+    }
+  }
   for (let i = 0; i < n; i++) {
     const side = hash(i, 1, seed) < 0.5 ? -1 : 1;
     const sx = x0 + (side < 0 ? hash(i, 2, seed) * w * 0.35 : w - hash(i, 2, seed) * w * 0.35);

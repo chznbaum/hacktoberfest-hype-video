@@ -34,6 +34,8 @@ export default {
     const W = bayWorld(g, t, c, {
       oy, tod: 'night', beamAngle: ang, beamStrength: 0.85 + 0.15 * pump, glow: 0.85 + 0.15 * pump,
       starShow: 0.55 + 0.45 * tween(t, 0, b(8)), waterX: 0, waterFull: true,
+      cloudsAt: v ? undefined : [{ kind: 'big', x: 150, y: 40, v: 0.8 }, { kind: 'wisp', x: 20, y: 70, v: 0.5 }, { kind: 'small', x: 120, y: 30, v: 0.6 }],
+      clearRect: t >= b(8) - 0.05 ? (v ? [11, 38, 112, 12] : [24, 13, 108, 11]) : null,
     });
     // lantern: small flare on each beat of the build bar, then a growing anamorphic flare into the cut
     const L = W.lh.lantern;
