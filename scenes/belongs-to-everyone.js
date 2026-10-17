@@ -5,7 +5,7 @@
 import { C, RAMP } from '../lib/palette.js';
 import { clamp, onTwos, frameIndex, ease, tween } from '../lib/motion.js';
 import { rect } from '../lib/pixel.js';
-import { text, textBox, anim, eyebrow, measure, corners } from '../lib/text.js';
+import { text, textBox, anim, eyebrow, measure } from '../lib/text.js';
 import { water, seawall, person, cloud, gull, sparkle, burst } from '../lib/world.js';
 import { clock, aiSpark, personX, R } from './_C-kit.js';
 
@@ -112,7 +112,6 @@ export default {
 
     // ---- type: eyebrow + two-line display lockup (cream / sky), centred like an anthem
     const s = c.safe;
-    corners(hi, c.fmt, { show: tween(t, 0, 0.2) });
     const l1 = 'AI belongs', l2 = 'to everyone';
     const maxW = c.fmt === '9x16' ? s.w : 1500;
     const w2 = measure(hi, l2, { role: 'display', size: 100 }).w;

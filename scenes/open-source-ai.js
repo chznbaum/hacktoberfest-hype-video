@@ -5,7 +5,7 @@
 import { C, RAMP } from '../lib/palette.js';
 import { clamp, hash, onTwos, frameIndex, ease, tween } from '../lib/motion.js';
 import { makeCanvas, rect, px, hline, vline, poly } from '../lib/pixel.js';
-import { chip, anim, corners, plus } from '../lib/text.js';
+import { chip, anim, plus } from '../lib/text.js';
 import { sparkle, burst } from '../lib/world.js';
 import { clock, aiSpark, lightDisc, capH, R } from './_C-kit.js';
 import { makeCanvas as mk } from '../lib/pixel.js';
@@ -196,8 +196,7 @@ export default {
       sparkle(p, R(cx + off) + gR.w + G.sw - 2, yTop + hh - 3, t, tOpen + 0.16, { size: 2, dur: 0.35 });
     }
 
-    // ---- type: key-art corners frame the moment; chip lands with the rain
-    corners(hi, c.fmt, { show: tween(t, 0, 0.2) });
+    // ---- type: chip lands with the rain (no corner stairs: they belong to the hook sections, verses stay clean)
     const s = c.safe;
     const size = c.fmt === '9x16' ? 58 : 58;
     const capC = capH(hi, size, 'cond', 700);

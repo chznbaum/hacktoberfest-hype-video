@@ -1,18 +1,21 @@
 // scenes/post-chorus.js (owner H): the post-chorus ad-libs ("and you know it!", "Hampton!", "hey!"). No lyric to
 // illustrate, so the picture carries it.
-//  variant 1 (C16P, cue pc1, after chorus 1): DAYTIME over the bay by the lighthouse. Beach-town banner planes tow
-//    the partners across the key-art teal sky, one per half bar in two lanes (high lane flies left, low lane flies
-//    right): HACKTOBERFEST, MLH, DEV, DIGITALOCEAN, then the venue 757 MAKERSPACE, which glides to the middle on the
-//    last bar. Logos are drawn on g.hi in strips that ride the pixel fabric's ripple, tinted dark teal.
+//  variant 1 (C16P, cue pc1, after chorus 1): DUSK over the bay by the lighthouse (carries on from C16's "glow").
+//    Beach-town banner planes tow the partners across the sky FAR OUT over the bay (behind the headland, so they
+//    never cover the lighthouse), one per half bar in a relay of two lanes (high lane flies left, low lane flies
+//    right; each banner leaves as the next one lands, so at most two are on screen): HACKTOBERFEST, MLH, DEV,
+//    DIGITALOCEAN, then the venue 757 MAKERSPACE, which flies solo, glides to the middle on the last bar and gets the
+//    "PART OF HACKTOBERFEST 2026" eyebrow. Text wordmarks fly on coral (tealDark-on-coral, the key-art chip rule);
+//    tinted logo strips use cream / sky fabric. Logos are drawn on g.hi in strips that ride the fabric's ripple.
 //  variant 2 (C30P, cue pc2, after the final chorus): NIGHT waterfront dance party. Crowd silhouetted against the
 //    bay under string lights, lighthouse beam sweeping on the beats, fireworks on beats/downbeats. On each bar a big
 //    burst fades into the local crew: HOSTED BY RevolutionVA, SPONSORED BY The AI Collective Hampton Roads,
 //    AT 757 MAKERSPACE (the AI Collective is the sponsor, never a host). Hands off to the end card's stair wipe.
-import { C, RAMP } from '../lib/palette.js';
+import { C, RAMP, SKY } from '../lib/palette.js';
 import { clamp, ease, tween, onTwos, hash, snap } from '../lib/motion.js';
-import { rect, px, vline, sprite, drawSprite } from '../lib/pixel.js';
-import { sky, stars, water, headland, cloud, gull, sparkle, haloDisc } from '../lib/world.js';
-import { text, chip, anim, bars, flash, plus } from '../lib/text.js';
+import { rect, px, vline, sprite, drawSprite, bands } from '../lib/pixel.js';
+import { sky, stars, water, headland, cloud, gull, sparkle, haloDisc, cached } from '../lib/world.js';
+import { text, chip, anim, bars, flash, plus, corners } from '../lib/text.js';
 import {
   R, clock, tinted, fit, wordmark, compose, ditherReveal, tow, towWidth, speedLines, PLANE,
   rocket, firework, stringLights, partygoer,
@@ -43,7 +46,7 @@ const BANNERS = [
   { id: 'hacktoberfest', word: 'HACKTOBERFEST', fabric: 'coral', plane: 'gold' },
   { id: 'mlh', img: 'mlh', fabric: 'cream', plane: 'coral' },
   { id: 'dev', img: 'dev', fabric: 'sky', plane: 'cream' },
-  { id: 'digitalocean', word: 'DIGITALOCEAN', fabric: 'cream', plane: 'sky' },
+  { id: 'digitalocean', word: 'DIGITALOCEAN', fabric: 'coral', plane: 'sky' },
   { id: '757-makerspace', img: 'mks', name: '757 MAKERSPACE', fabric: 'coral', plane: 'gold' },
 ];
 const DAY = {
@@ -56,7 +59,7 @@ const DAY = {
   },
   '9x16': {
     H: 24, padX: 7, rope: 12, clearX: 178, minLen: 44, word: 84, drift: 3, imgH: 100, badgeH: 108, badgeWord: 70,
-    lanes: [{ top: 46, dir: -1, hc: 90 }, { top: 112, dir: 1, hc: 90 }], midTop: 80,
+    lanes: [{ top: 52, dir: -1, hc: 90 }, { top: 116, dir: 1, hc: 90 }], midTop: 84,
     lh: { x: 122, base: 274, h: 112 }, water: { x: 0, y: 282, fadeW: 40 }, boat: { x: 22, y: 292 }, plus: [984, 846],
     clouds: [{ kind: 'big', x: 4, y: 176, v: 0.9 }, { kind: 'twoTone', x: 150, y: 160, v: 0.7 }, { kind: 'small', x: 120, y: 26, v: 0.5 }, { kind: 'wisp', x: 20, y: 30, v: 1.1 }],
     gulls: [{ x: 50, y: 200, p: 0 }, { x: 61, y: 209, p: 0.4 }, { x: 166, y: 196, p: 0.7 }],
@@ -96,10 +99,11 @@ function drawDay(g, t, c) {
     const len = Math.max(L.minLen, Math.ceil(content.w / 6) + L.padX * 2);
     const W = towWidth(len, L.rope);
     const tl = B(land[i]);
-    const E = (i === 0 ? 1 : 1.25) * spb;                       // entry (fast whoosh, eased out)
-    let te = i + 2 < BANNERS.length ? B(land[i + 2] - 1) : Infinity; // exit as the next one in this lane arrives
-    if (i === 3) te = B(finalBeat);                              // the low lane clears for the finale
-    const X = 1.3 * spb;
+    const E = 1.0 * spb;                                         // entry (fast whoosh, eased out)
+    // relay: each banner starts leaving as the next one (other lane) lands, so at most two are on screen at once;
+    // the venue (last) stays to the end
+    const te = i + 1 < BANNERS.length ? B(land[i + 1]) : Infinity;
+    const X = 1.0 * spb;
     return { b, i, lane, content, len, W, tl, E, te, X, dir: lane.dir };
   });
   const drift = L.drift; // px/s while holding: they keep flying
@@ -127,24 +131,16 @@ function drawDay(g, t, c) {
     return x;
   };
 
-  // ---------------- world (key-art day)
-  for (const cl of L.clouds) cloud(p, R(cl.x + ((tq * cl.v * 1.6) % 48)) - 12, cl.y, { kind: cl.kind });
-  water(p, t, { x: L.water.x, y: L.water.y, w: PW - L.water.x, h: PH - L.water.y, tod: 'day', fade: v ? 'none' : 'left', fadeW: L.water.fadeW, seed: 4 });
-  headland(p, L.lh.x, L.lh.base, { t, tod: 'day', h: L.lh.h, glow: 0.7 + 0.3 * c.pulse(t, 0.3) });
-  // a little sailboat out on the bay, bobbing on the beat
-  drawSprite(p, boatSprite(), R(L.boat.x + tq * 1.5), L.boat.y - (c.pulse(t, 0.2) > 0.5 ? 1 : 0), { anchor: 'bc' });
-  for (const gl of L.gulls) {
-    const dx = R(Math.sin(tq * 0.6 + gl.p * 5) * 3), dy = R(Math.sin(tq * 1.3 + gl.p * 7) * 1.5);
-    gull(p, gl.x + dx, gl.y + dy, t, { phase: gl.p, rate: 2.2 });
-  }
-  // a pair of gulls crosses on the last bar
+  // ---------------- world (key-art layout at dusk: banded sunset sky, first stars, dusk water)
+  bands(p, 0, 0, PW, L.water.y, SKY.dusk, { blend: 2, stops: [0, 0.3, 0.5, 0.66, 0.8, 0.9, 0.97] });
+  stars(p, t, { h: R(L.water.y * 0.3), seed: 29, show: 0.45, big: 0.05 });
+  for (const cl of L.clouds) cloud(p, R(cl.x + ((tq * cl.v * 1.6) % 48)) - 12, cl.y, { kind: cl.kind, tod: 'dusk' });
+  // calm darker sea under the sunset; the key-art streak water (deeper evening ramp, like C16) fades into it
+  rect(p, 0, L.water.y, PW, PH - L.water.y, C.tealDark);
+  water(p, t, { x: L.water.x, y: L.water.y, w: PW - L.water.x, h: PH - L.water.y, tod: 'night', fade: v ? 'none' : 'left', fadeW: L.water.fadeW, seed: 4, glints: [{ x: L.lh.x, color: C.gold, w: 8 }, { x: R(PW * 0.42), color: '#F5A55A', w: 10 }] });
   const tf = B(finalBeat);
-  if (t > tf - 0.2) {
-    const k = t - (tf - 0.2);
-    for (let j = 0; j < 2; j++) gull(p, R(-8 + k * 38 - j * 9), (v ? 150 : 104) - j * 5 + R(Math.sin(k * 3 + j) * 2), t, { phase: j * 0.4, rate: 2.6 });
-  }
 
-  // ---------------- banners (draw the lane further from the viewer first: high lane = farther)
+  // ---------------- banners: far out over the bay, BEHIND the headland (high lane = farther, drawn first)
   const geo = [];
   const order = [0, 2, 4, 1, 3];
   for (const i of order) {
@@ -195,10 +191,33 @@ function drawDay(g, t, c) {
     }
   }
 
-  // ---------------- type: one small eyebrow, key-art ||| style; the gold plus pulses on the beat
+  // the banners' logo strips (hi layer) are cut out where the headland stands, then the headland is drawn over the
+  // pixel banners: the planes pass behind the lighthouse instead of across it
+  const sil = cached(`c16p-headland|${c.fmt}`, PW, PH, (ctx) => headland(ctx, L.lh.x, L.lh.base, { t: 0, tod: 'dusk', h: L.lh.h, glow: 0 }));
+  hi.save();
+  hi.globalCompositeOperation = 'destination-out';
+  hi.imageSmoothingEnabled = false;
+  hi.drawImage(sil, 0, 0, PW * 6, PH * 6);
+  hi.restore();
+  headland(p, L.lh.x, L.lh.base, { t, tod: 'dusk', h: L.lh.h, glow: 0.75 + 0.25 * c.pulse(t, 0.3) });
+  // a little sailboat out on the bay, bobbing on the beat
+  drawSprite(p, boatSprite(), R(L.boat.x + tq * 1.5), L.boat.y - (c.pulse(t, 0.2) > 0.5 ? 1 : 0), { anchor: 'bc' });
+  for (const gl of L.gulls) {
+    const dx = R(Math.sin(tq * 0.6 + gl.p * 5) * 3), dy = R(Math.sin(tq * 1.3 + gl.p * 7) * 1.5);
+    gull(p, gl.x + dx, gl.y + dy, t, { phase: gl.p, rate: 2.2, tod: 'dusk', color: C.cream });
+  }
+  // a pair of gulls crosses on the last bar
+  if (t > tf - 0.2) {
+    const k = t - (tf - 0.2);
+    for (let j = 0; j < 2; j++) gull(p, R(-8 + k * 38 - j * 9), (v ? 150 : 104) - j * 5 + R(Math.sin(k * 3 + j) * 2), t, { phase: j * 0.4, rate: 2.6, tod: 'dusk', color: C.cream });
+  }
+
+  // ---------------- type: key-art corners; one small eyebrow (||| style) once the venue flies solo, so there are
+  // never more than two labels; the gold plus pulses on the beat
+  corners(hi, c.fmt, { y: v ? 132 : undefined });
   plus(hi, L.plus[0], L.plus[1], { scale: 0.8 + 0.4 * c.pulse(t, 0.35) });
   const ey = 'PART OF HACKTOBERFEST 2026';
-  const t0 = B(1);
+  const t0 = items[3].te + items[3].X;
   if (!v) {
     const sz = 34, x = 96, y = 948;
     const b = bars(hi, x, y - 6, 72, { grow: tween(t, t0 - 0.1, 0.3) });
@@ -356,6 +375,7 @@ function drawNight(g, t, c) {
       sparkle(p, sx, sy, t, tb + k * 0.07, { color: [C.gold, C.sky, C.cream][k], size: 2, dur: 0.4 });
     }
   }
+  corners(hi, c.fmt, { y: v ? 132 : undefined });   // key-art corner stairs: on in every hook section (intro, choruses + post-choruses, bridge, end card)
   // ignition flash on the big bursts (hi layer, 3 frames)
   if (kBig < 0.1) flash(hi, DW, DH, 0.16 * (1 - kBig / 0.1), C.cream);
 }
