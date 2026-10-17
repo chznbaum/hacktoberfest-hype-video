@@ -106,6 +106,8 @@ infoBlock(g.hi, 60, 878, { size: 56, lines: ['OCTOBER 17 • 10 AM—4 PM', '757
 ```
 The **stair-step** shape is the signature: the engine's stair wipe uses coral/sky cells built from it. Reuse it
 for reveals and accents rather than inventing new decorative shapes.
+**Corner rule:** the `corners()` clusters are on in every *hook* section (intro, choruses + post-choruses, bridge,
+end card; 9:16 at `y: 132`) and off in the verses, so they only appear/disappear at section changes.
 
 ## 6. Motion
 
@@ -127,7 +129,7 @@ for reveals and accents rather than inventing new decorative shapes.
 
 - 16:9: text inside x 96…1824, y 54…1026.
 - 9:16: text inside **x 80…1000, y 230…1500** (top ~12% and bottom ~22% are covered by platform UI).
-  During the chorus in the 9:16 social edit the engine draws the info strip (`SAT 10.17 · HAMPTON · FREE`) at
+  During the intro + chorus in the 9:16 social edit the engine draws the info strip (`SAT 10.17 · HAMPTON · FREE`) at
   y ≈ 1428-1476 and **`c.safe.y1` shrinks to 1404**: lay out against `c.safe`, never hard-coded numbers.
 - Pixel art may bleed everywhere (sky up top, water at the bottom).
 - 9:16 is a recomposition, not a crop: stack vertically, bigger type relative to width, taller sky / deeper water.

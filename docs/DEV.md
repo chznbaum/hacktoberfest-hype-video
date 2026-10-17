@@ -98,12 +98,13 @@ engine renders your clip at **t = 0** (held), so your first frame should already
 | `c.beats`, `c.bars` | beat / downbeat times relative to clip start, including 8 before and after the clip (negatives allowed) |
 | `c.beat(t)`, `c.bar(t)` | `{ index, phase, t0, t1, len }` (index into c.beats / c.bars; phase 0..1) |
 | `c.pulse(t, decay=.25)` | 1 on each beat, exponential decay; `c.barPulse(t, decay=.4)` on downbeats |
-| `c.safe` | text-safe rect `{x0,y0,x1,y1,w,h,cx,cy}` for this fmt, **minus engine overlays** (9:16 chorus: info strip) |
+| `c.safe` | text-safe rect `{x0,y0,x1,y1,w,h,cx,cy}` for this fmt, **minus engine overlays** (9:16 social intro + chorus: info strip) |
 | `c.type` | type scale for the fmt (`hero, display, title, label, info, eyebrow, small`) |
 | `c.facts`, `c.lyrics`, `c.song` | content JSON (song map is the scaled one) |
 | `c.rng(seed)` | deterministic PRNG: `.next() .range(a,b) .int(a,b) .pick(arr) .chance(p) .sign()` |
 | `c.img(path)` | preloaded image (declare it in `assets`) |
 | `c.overlays` | engine overlay ids active on this clip (e.g. `['info-strip']`) |
+| `c.transitionOut` | the transition this clip plays OUT with in the current edit (`{type, beats}`: the next clip's `in`, or the edit's splice at a range end), `null` for a hard cut. Use it instead of guessing from `c.edit` (wake-up does) |
 | `c.edit` | `'full'`, `'social'` or `null` (standalone) |
 
 ### Rules
@@ -127,7 +128,12 @@ engine renders your clip at **t = 0** (held), so your first frame should already
   C12-C16's scenes with variant 2); `in` = transition into the clip: `{type:'stair'|'dither', beats}` (played over the
   previous clip's last beats). `edits.full` (16:9, whole song) and `edits.social` (9:16, song ranges
   `[i.1..i.3] + [ch.1..ch.8] + [out.1..end]` = ~42 s, per BRIEF section 4; `splice` per junction: cut into the
-  chorus drop, stair wipe into the end card). `overlays[]`: the 9:16 info strip over ch.1-ch.8 in the social edit.
+  chorus drop, stair wipe into the end card). `overlays[]`: the 9:16 info strip over i.1-ch.8 in the social edit (muted
+  viewers get what/when/where from the first chant hit; the social edit skips v1, so that is intro + chorus).
+- Edit rhythm (finisher pass): transitions only at section changes that carry no sung payoff (stair into C17 and C31);
+  C04->C05 and C23->C24 are hard cuts (the "Hacktoberfest!" headline and the pizza payoff stay clean; the bridge drop
+  lands on a cut). ch.8 / ch2.8 start on the downbeat (48.21 / 105.82, set in `analysis/build_song_map.py`), not on the
+  "Hampton's" pickup, so SHOW gets a full beat and C15/C29 -> C16/C30 cut on the bar.
 - Output time T of an edit maps to song time s through the ranges; the render tool splices the audio the same way.
 
 ## Library reference
@@ -169,7 +175,11 @@ engine renders your clip at **t = 0** (held), so your first frame should already
 - measuring: `measure(ctx,str,{role,size,weight,tracking})` → `{w,cap,asc,desc}`, `textBox(ctx,str,x,y,opts)` → `{x0,y0,x1,y1,w,h,cx,cy}`,
   `fitSize(ctx,str,maxW,{role,maxSize,minSize})`, `capRatio(ctx,role,weight)`, `font(role,size,weight)`
 - animation: `anim(ctx,t,{t0,t1,x,y,enter:'cut'|'stamp'|'pop'|'fade'|'slide-left|right|up|down',exit:'cut'|'shrink'|'drop'|'fade'|'slide-*',dist,dur},(ctx)=>draw)`
-  wraps ANY drawing (chips, panels, lockups); `stampText(ctx,t,t0,str,x,y,opts)`, `slideText(...{from,dist,dur})`,
+  wraps ANY drawing (chips, panels, lockups); stamp accepts `from` (start scale, default 1.15).
+  `stampFit(ctx, box, maxScale=1.15)` -> `{x, from}`: anchor + capped overshoot so a stamp never flashes past the safe
+  columns (full-width words get a 1.03 punch); `stampAnchorX(ctx, box, scale)` is the anchor part. `titleLockup`,
+  `stampText` and owner F's `lbl()` use it; use it for any big stamped word: `anim(h, t, { t0, ...stampFit(h, bx), y: bx.cy })`.
+  `stampText(ctx,t,t0,str,x,y,opts)`, `slideText(...{from,dist,dur})`,
   `popText(...)`, `typeText(ctx,t,t0,str,x,y,{cps:28,cursor:true,...})` (terminal type-on). All accept `t1` + `exit`.
 - motifs: `chip(ctx,str,x,y,{size:44,align,padX,padY,minW,color,textColor})` (y = vertical centre) → rect,
   `bars(ctx,x,y,h,{n:3,barW,gap,grow})`, `stairs(ctx,x,y,{cell:30,n:3,dir:'dl'|'dr'|'ul'|'ur',color,show})`,
@@ -211,5 +221,5 @@ that throws in `draw()` fails the frame with the scene id, clip and t in the mes
 1. `node tools/contact.mjs --clip <Cxx> --fmt 16x9 --n 12` and `--fmt 9x16`: look at every frame.
 2. Same with `--dur-scale 0.6` and `--dur-scale 1.8` (or `--scene <id> --dur <s>`).
 3. Variant 2 scenes: `--clip C26` etc. (or `--scene sea-to-stars --variant 2`).
-4. 9:16 chorus clips: `--clip C12 --fmt 9x16` shows the info strip; keep text inside `c.safe`.
+4. 9:16 social clips (intro + chorus): `--clip C12 --fmt 9x16` shows the info strip; keep text inside `c.safe`.
 5. Compare against `style-ref` side by side: palette, type sizes, pixel density, motion feel.
