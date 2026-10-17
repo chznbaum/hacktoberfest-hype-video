@@ -71,7 +71,7 @@ function drawWorld(g, t, c, L, T, night, v) {
   // streaks while the rocket is climbing fast
 
   // the earth limb (the bay we came from) sinking away
-  const sink = R(Math.min(26, t * 5));
+  const sink = R(Math.min(14, t * 4));
   earthLimb(ctx, L.earth.cx, L.earth.cy, L.earth.r, PW, PH, { night, oy: sink });
   if (night) {
     // city lights on the night side (Hampton Roads twinkles)

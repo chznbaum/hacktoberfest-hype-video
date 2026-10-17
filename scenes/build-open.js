@@ -106,8 +106,8 @@ function drawWorld(g, t, c, L, T, night, v) {
   }
 
   // --- braces: drop in at t=0, knock on the beats, slide open on "open"
-  const dropK = clamp(t / 0.28);
-  const dropY = R(-36 * (1 - ease.outBounce(dropK)));
+  const dropK = clamp(t / 0.17);
+  const dropY = R(-30 * (1 - ease.outBounce(dropK)));
   const openK = t < T.tOpen ? 0 : ease.outBack(clamp((t - T.tOpen) / 0.32));
   const gap = R(L.open * openK);
   const knock = t < T.tOpen ? R(c.pulse(t, 0.12) * 1.5) : 0;
@@ -143,7 +143,9 @@ function drawWorld(g, t, c, L, T, night, v) {
     rect(ctx, L.cx - (cw >> 1), sy0 + 6, cw, sy1 - sy0 - 6, '#FFF1C9');
     if (flashK > 0.5) rect(ctx, ix0, sy0, sw, sy1 - sy0, C.cream);
     // spill on the lawn, widening towards the viewer
-    lightPoly(ctx, [[ix0 + 2, L.base], [ix1 - 2, L.base], [ix1 + 40, PH], [ix0 - 40, PH]], night ? '#2A2410' : '#1E1A0C');
+    const sp = Math.min(PH - L.base, 34), spx = R(sp * 1.2);
+    lightPoly(ctx, [[ix0 + 2, L.base], [ix1 - 2, L.base], [ix1 + spx, L.base + sp], [ix0 - spx, L.base + sp]], night ? '#2A2410' : '#1E1A0C');
+    if (PH - L.base > sp) dither(ctx, ix0 - spx, L.base + sp, ix1 - ix0 + spx * 2, 2, null, night ? '#0F3A36' : '#4A7A45', 0.5);
   }
   // string lights between the brace tops (variant 2)
   if (night && lit) {
@@ -163,8 +165,8 @@ function drawWorld(g, t, c, L, T, night, v) {
   ctx.drawImage(cl, lx1 - B.W, top);
   ctx.drawImage(cr, rx0, top);
   // landing dust
-  if (t < 0.5 && dropK >= 1) {
-    const k = (t - 0.28) / 0.22;
+  if (t < 0.4 && dropK >= 1) {
+    const k = (t - 0.17) / 0.23;
     for (let i = 0; i < 8; i++) {
       const d = R(4 + k * 14);
       px(ctx, L.cx - B.W + (i % 2 ? -d : d - 6), L.base - 1 - R(hash(i, 1, 3) * 3 * (1 - k)), leaf[4]);
@@ -174,13 +176,14 @@ function drawWorld(g, t, c, L, T, night, v) {
 
   // --- the crowd streams in from both edges
   const P = crowd(g.fmt);
-  const speed = v ? 56 : 78;
+  const tempo = clamp(0.6 / T.bl, 0.5, 2); // walk faster when the song map is tighter
+  const speed = (v ? 56 : 78) * tempo;
   const cheer = t >= T.tBegin;
   const hop = (p) => (cheer && c.pulse(t + p.k * 0.013, 0.2) > 0.55 ? 2 : 0);
   // draw back row first
   const sorted = [...P].sort((a, b) => a.base - b.base);
   for (const p of sorted) {
-    const ts = T.tOpen + 0.04 + p.order * (v ? 0.075 : 0.06);
+    const ts = T.tOpen + 0.04 + (p.order * (v ? 0.075 : 0.06)) / tempo;
     if (t < ts) continue;
     const startX = p.side < 0 ? -8 : PW + 8;
     const dist = Math.abs(p.x - startX);
