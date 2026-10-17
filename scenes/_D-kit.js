@@ -211,8 +211,11 @@ export function braceCanvas(H, Wd, T, pal, depth = 3, flip = false) {
       ctx.fillStyle = col; ctx.fillRect(x, y, 1, 1);
     }
     // highlight streak inside the lit edge on the upper stem/hooks (pixel shine)
-    for (let y = 0; y < H * 0.45; y++) for (let x = 0; x < Wd; x++) {
-      if (at(x, y) && at(x - 1, y) && !at(x - 2, y) && at(x, y - 1) && (y % 7 < 4)) { ctx.fillStyle = pal[4]; ctx.fillRect(x, y, 1, 1); }
+    for (let y = Math.round(H * 0.14); y < H * 0.36; y++) for (let x = 0; x < Wd; x++) {
+      if (at(x, y) && at(x - 1, y) && !at(x - 2, y) && at(x, y - 1) && at(x, y + 1)) { ctx.fillStyle = pal[4]; ctx.fillRect(x, y, 1, 1); }
+    }
+    for (let y = Math.round(H * 0.62); y < H * 0.7; y++) for (let x = 0; x < Wd; x++) {
+      if (at(x, y) && at(x - 1, y) && !at(x - 2, y) && at(x, y - 1) && at(x, y + 1)) { ctx.fillStyle = pal[4]; ctx.fillRect(x, y, 1, 1); }
     }
   });
 }
@@ -247,6 +250,36 @@ export function ditherPoly(ctx, pts, color, level, colorA = null) {
     dither(ctx, Math.floor(minX), Math.floor(minY), Math.ceil(maxX - minX) + 1, Math.ceil(maxY - minY) + 1, colorA, color, level);
   }
   ctx.restore();
+}
+/** Flat additive light polygon (pixel-crisp scanline spans, 'lighter' blend): banded light like world.beam(). */
+export function lightPoly(ctx, pts, add = '#201C0C') {
+  let minY = Infinity, maxY = -Infinity;
+  for (const [, y] of pts) { minY = Math.min(minY, y); maxY = Math.max(maxY, y); }
+  ctx.save();
+  ctx.globalCompositeOperation = 'lighter';
+  ctx.fillStyle = add;
+  ctx.beginPath();
+  for (let y = Math.floor(minY); y <= Math.ceil(maxY); y++) {
+    const yc = y + 0.5, xs = [];
+    for (let i = 0; i < pts.length; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % pts.length];
+      if ((y0 <= yc && y1 > yc) || (y1 <= yc && y0 > yc)) xs.push(x0 + ((yc - y0) / (y1 - y0)) * (x1 - x0));
+    }
+    xs.sort((a, b) => a - b);
+    for (let i = 0; i + 1 < xs.length; i += 2) { const a = Math.round(xs[i]), b = Math.round(xs[i + 1]); if (b > a) ctx.rect(a, y, b - a, 1); }
+  }
+  ctx.fill();
+  ctx.restore();
+}
+/** Additive light rays fanning from (cx, cy): { n, len, width, rot, a0, a1, add } */
+export function lightRays(ctx, cx, cy, o = {}) {
+  const n = o.n ?? 7, len = o.len ?? 140, w = o.width ?? 0.08, rot = o.rot ?? 0;
+  const a0 = o.a0 ?? Math.PI, a1 = o.a1 ?? Math.PI * 2;
+  for (let i = 0; i < n; i++) {
+    const a = a0 + ((i + 0.5) / n) * (a1 - a0) + rot;
+    const ww = w * (i % 2 ? 0.55 : 1);
+    lightPoly(ctx, [[cx, cy], [cx + Math.cos(a - ww) * len, cy + Math.sin(a - ww) * len], [cx + Math.cos(a + ww) * len, cy + Math.sin(a + ww) * len]], o.add || '#1A170A');
+  }
 }
 /** Radial light rays (dithered wedges) from (cx, cy). opts: { n, len, width (rad), rot, color, level, a0, a1 } */
 export function rays(ctx, cx, cy, o = {}) {
@@ -393,7 +426,9 @@ export function skyline(key, W, H, x0, x1, ground, o = {}) {
   while (x < x1) {
     const w = r.int(10, 22);
     const kind = r.pick(['flat', 'flat', 'step', 'step', 'spire', 'roof', 'tank']);
-    const h = R((r.int(18, 44) + (kind === 'spire' ? 10 : 0)) * tall);
+    const u = r.next();
+    const base = u < 0.3 ? r.int(10, 18) : u < 0.8 ? r.int(20, 34) : r.int(38, 56);
+    const h = R((base + (kind === 'spire' ? 8 : 0)) * tall);
     blds.push({ x, w, h, kind, depth: r.chance(0.45) ? 1 : 0 });
     x += w + r.int(-3, 2);
   }
@@ -414,7 +449,7 @@ export function skyline(key, W, H, x0, x1, ground, o = {}) {
       // roof details
       if (b.kind === 'step') { rect(ctx, b.x + 3, top - 4, b.w - 6, 4, col); if (!pass) vline(ctx, b.x + 3, top - 4, top - 1, rim); }
       if (b.kind === 'spire') { const sx = b.x + (b.w >> 1); for (let i = 0; i < 9; i++) rect(ctx, sx - Math.max(0, 2 - (i >> 2)), top - 1 - i, Math.max(1, 5 - 2 * (i >> 2)), 1, col); vline(ctx, sx, top - 14, top - 9, col); }
-      if (b.kind === 'roof') { for (let i = 0; i < (b.w >> 1); i++) rect(ctx, b.x + i, top - (b.w >> 1) + i, b.w - i * 2, 1, col); }
+      if (b.kind === 'roof') { for (let i = 0; i < (b.w >> 1); i++) rect(ctx, b.x + i, top - 1 - (i >> 1), b.w - i * 2, 1, col); }
       if (b.kind === 'tank') { rect(ctx, b.x + 3, top - 7, 6, 4, col); vline(ctx, b.x + 4, top - 3, top - 1, col); vline(ctx, b.x + 7, top - 3, top - 1, col); }
       // windows: 2x2 cells on a 4px grid (front) / 1x1 on a 3px grid (back)
       const step = pass ? 3 : 4, ww = pass ? 1 : 2;
@@ -443,7 +478,7 @@ const KID_WALK = [
   '..hhh..', '.hhhhh.', '.hssss.', '.sesek.', '..sss..', '.ttttt.', 'stttTts', '..tTt..', '..pp...', '.p..p..', 'oo..oo.',
 ];
 const KID_CHEER = [
-  's.hhh.s', 't.hhh.t', '.hssss.', '.sesek.', '..sss..', '.ttttt.', '.ttTtt.', '..tTt..', '..p.p..', '..p.p..', '.oo.oo.',
+  's.....s', 't.hhh.t', 'thhhhht', '.hssss.', '.sesek.', '..sss..', '.ttttt.', '..tTt..', '..p.p..', '..p.p..', '.oo.oo.',
 ];
 const kidCache = new Map();
 /** Kid sprite (7x11). opts like world.person: { t, pose 'stand'|'walk'|'cheer', skin, hair, top, pants, flip } */
