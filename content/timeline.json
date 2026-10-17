@@ -1,0 +1,308 @@
+{
+ "version": 1,
+ "fps": 30,
+ "_doc": "Clips are bound to cue ids from content/song-map.json (from = start of that cue, to = end of that cue). 'in' = optional transition INTO the clip: it plays during the last `beats` beats of the previous clip, and the incoming clip is held at t=0 until its own start, so its entry animation lands on the downbeat. Types: cut (default), stair (stair-step pixel wipe), dither (Bayer dither dissolve). Edits map OUTPUT time to SONG time through song-time ranges spliced on cue (bar) boundaries; '@start' / '@end' mean song start / end. 'splice' = transition used at each splice point of an edit (one object for all junctions, or an array with one entry per junction; it plays over the last `beats` beats before the junction). Overlays are drawn by the engine on top of scenes for the given edit + cue range; scenes see their reserved area removed from c.safe.",
+ "formats": {
+  "16x9": {
+   "W": 1920,
+   "H": 1080,
+   "PW": 320,
+   "PH": 180,
+   "P": 6,
+   "defaultEdit": "full"
+  },
+  "9x16": {
+   "W": 1080,
+   "H": 1920,
+   "PW": 180,
+   "PH": 320,
+   "P": 6,
+   "defaultEdit": "social"
+  }
+ },
+ "edits": {
+  "full": {
+   "fmt": "16x9",
+   "ranges": [
+    [
+     "@start",
+     "@end"
+    ]
+   ]
+  },
+  "social": {
+   "fmt": "9x16",
+   "ranges": [
+    [
+     "i.1",
+     "i.3"
+    ],
+    [
+     "ch.1",
+     "ch.8"
+    ],
+    [
+     "out.1",
+     "@end"
+    ]
+   ],
+   "splice": [
+    {
+     "type": "cut"
+    },
+    {
+     "type": "stair",
+     "beats": 1
+    }
+   ],
+   "_note": "BRIEF section 4: intro chant -> hosts -> wake-up -> full chorus 1 -> end card (~42 s). Verse 1 is skipped. To include verse 1 instead use ranges [[\"i.1\",\"ch.8\"],[\"out.1\",\"@end\"]] and splice [{\"type\":\"stair\",\"beats\":1}]."
+  }
+ },
+ "overlays": [
+  {
+   "id": "info-strip",
+   "type": "info-strip",
+   "edits": [
+    "social"
+   ],
+   "from": "ch.1",
+   "to": "ch.8",
+   "text": "SAT 10.17 \u00b7 HAMPTON \u00b7 FREE"
+  }
+ ],
+ "clips": [
+  {
+   "id": "C01",
+   "scene": "cold-open",
+   "from": "cold",
+   "to": "cold",
+   "variant": 1
+  },
+  {
+   "id": "C02",
+   "scene": "chant-757",
+   "from": "i.1",
+   "to": "i.1",
+   "variant": 1
+  },
+  {
+   "id": "C03",
+   "scene": "hosts",
+   "from": "i.2",
+   "to": "i.2",
+   "variant": 1
+  },
+  {
+   "id": "C04",
+   "scene": "wake-up",
+   "from": "i.3",
+   "to": "i.3",
+   "variant": 1
+  },
+  {
+   "id": "C05",
+   "scene": "calendar",
+   "from": "v1.1",
+   "to": "v1.1",
+   "variant": 1,
+   "in": {
+    "type": "stair",
+    "beats": 1
+   }
+  },
+  {
+   "id": "C06",
+   "scene": "boot",
+   "from": "v1.2",
+   "to": "v1.2",
+   "variant": 1
+  },
+  {
+   "id": "C07",
+   "scene": "makerspace",
+   "from": "v1.3",
+   "to": "v1.4",
+   "variant": 1
+  },
+  {
+   "id": "C08",
+   "scene": "coffee-bagels",
+   "from": "v1.5",
+   "to": "v1.5",
+   "variant": 1
+  },
+  {
+   "id": "C09",
+   "scene": "bring-kit",
+   "from": "v1.6",
+   "to": "v1.6",
+   "variant": 1
+  },
+  {
+   "id": "C10",
+   "scene": "open-source-ai",
+   "from": "v1.7",
+   "to": "v1.7",
+   "variant": 1
+  },
+  {
+   "id": "C11",
+   "scene": "belongs-to-everyone",
+   "from": "v1.8",
+   "to": "v1.8",
+   "variant": 1
+  },
+  {
+   "id": "C12",
+   "scene": "sea-to-stars",
+   "from": "ch.1",
+   "to": "ch.2",
+   "variant": 1
+  },
+  {
+   "id": "C13",
+   "scene": "build-open",
+   "from": "ch.3",
+   "to": "ch.4",
+   "variant": 1
+  },
+  {
+   "id": "C14",
+   "scene": "sea-to-stars-b",
+   "from": "ch.5",
+   "to": "ch.6",
+   "variant": 1
+  },
+  {
+   "id": "C15",
+   "scene": "fork-train-ship-show",
+   "from": "ch.7",
+   "to": "ch.7",
+   "variant": 1
+  },
+  {
+   "id": "C16",
+   "scene": "hampton-glow",
+   "from": "ch.8",
+   "to": "ch.8",
+   "variant": 1
+  },
+  {
+   "id": "C17",
+   "scene": "decision-model",
+   "from": "v2.1",
+   "to": "v2.2",
+   "variant": 1,
+   "in": {
+    "type": "stair",
+    "beats": 1
+   }
+  },
+  {
+   "id": "C18",
+   "scene": "gemma-call",
+   "from": "v2.3",
+   "to": "v2.3",
+   "variant": 1
+  },
+  {
+   "id": "C19",
+   "scene": "hermes",
+   "from": "v2.4",
+   "to": "v2.4",
+   "variant": 1
+  },
+  {
+   "id": "C20",
+   "scene": "challenges",
+   "from": "v2.5",
+   "to": "v2.5",
+   "variant": 1
+  },
+  {
+   "id": "C21",
+   "scene": "uno-q",
+   "from": "v2.6",
+   "to": "v2.6",
+   "variant": 1
+  },
+  {
+   "id": "C22",
+   "scene": "swag",
+   "from": "v2.7",
+   "to": "v2.7",
+   "variant": 1
+  },
+  {
+   "id": "C23",
+   "scene": "pizza",
+   "from": "v2.8",
+   "to": "v2.8",
+   "variant": 1
+  },
+  {
+   "id": "C24",
+   "scene": "builders",
+   "from": "br.1",
+   "to": "br.2",
+   "variant": 1,
+   "in": {
+    "type": "dither",
+    "beats": 2
+   }
+  },
+  {
+   "id": "C25",
+   "scene": "chant-757-b",
+   "from": "br.3",
+   "to": "br.4",
+   "variant": 1
+  },
+  {
+   "id": "C26",
+   "scene": "sea-to-stars",
+   "from": "ch2.1",
+   "to": "ch2.2",
+   "variant": 2
+  },
+  {
+   "id": "C27",
+   "scene": "build-open",
+   "from": "ch2.3",
+   "to": "ch2.4",
+   "variant": 2
+  },
+  {
+   "id": "C28",
+   "scene": "sea-to-stars-b",
+   "from": "ch2.5",
+   "to": "ch2.6",
+   "variant": 2
+  },
+  {
+   "id": "C29",
+   "scene": "fork-train-ship-show",
+   "from": "ch2.7",
+   "to": "ch2.7",
+   "variant": 2
+  },
+  {
+   "id": "C30",
+   "scene": "hampton-glow",
+   "from": "ch2.8",
+   "to": "ch2.8",
+   "variant": 2
+  },
+  {
+   "id": "C31",
+   "scene": "endcard",
+   "from": "out.1",
+   "to": "tail",
+   "variant": 1,
+   "in": {
+    "type": "stair",
+    "beats": 1
+   }
+  }
+ ]
+}

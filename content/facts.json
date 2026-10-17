@@ -1,0 +1,198 @@
+{
+  "officialName": "Hacktoberfest Hack Day Hampton x RevolutionVA",
+  "campaign": "Hacktoberfest 2026 in the 757",
+  "title": {
+    "line1": "Hacktoberfest",
+    "line2": "2026",
+    "line3": "in the 757"
+  },
+  "format": "Community Hack Day",
+  "formatShort": "Hack Day",
+  "date": {
+    "iso": "2026-10-17",
+    "weekday": "Saturday",
+    "weekdayShort": "SAT",
+    "month": "October",
+    "monthShort": "OCT",
+    "day": 17,
+    "year": 2026,
+    "numeric": "10.17",
+    "numericYear": "10.17.26",
+    "label": "SAT OCT 17",
+    "long": "Saturday, October 17, 2026"
+  },
+  "time": {
+    "start": "10 AM",
+    "end": "4 PM",
+    "label": "10 AM–4 PM",
+    "compact": "10AM–4PM",
+    "tz": "Eastern"
+  },
+  "venue": {
+    "name": "757 Makerspace",
+    "location": "Hampton",
+    "street": "16 Murray St",
+    "streetShort": "16 MURRAY ST",
+    "streetSign": "MURRAY ST",
+    "city": "Hampton",
+    "state": "VA",
+    "zip": "23651",
+    "address": "16 Murray St, Hampton, VA 23651",
+    "cityState": "Hampton, VA"
+  },
+  "price": "Free",
+  "who": [
+    "Open to all ages",
+    "Beginners welcome",
+    "Students encouraged",
+    "Pros welcome"
+  ],
+  "chips": {
+    "keyArt": "FREE · BEGINNERS WELCOME · STUDENTS ENCOURAGED",
+    "short": "FREE · BEGINNERS WELCOME",
+    "allAges": "FREE · ALL AGES"
+  },
+  "bring": [
+    "Laptop",
+    "Charger",
+    "Curiosity"
+  ],
+  "bringNote": "A project idea is optional",
+  "hosts": [
+    "Chazona Baum",
+    "Ryan McGovern"
+  ],
+  "hostedBy": [
+    "RevolutionVA"
+  ],
+  "hostedByDisplay": [
+    "Revolution VA"
+  ],
+  "globalProgram": {
+    "name": "Hacktoberfest 2026",
+    "runBy": [
+      "MLH",
+      "DEV"
+    ],
+    "presentedBy": "DigitalOcean",
+    "theme": "AI belongs to everyone",
+    "themeCaps": "AI BELONGS TO EVERYONE"
+  },
+  "sessions": [
+    {
+      "id": "decision-model",
+      "title": "Build a decision model",
+      "detail": "Fine-tune an LLM to read an input, score the options you give it, and return a choice with a probability (Jev-style).",
+      "tools": [
+        "Unsloth",
+        "Hugging Face",
+        "Gemma"
+      ]
+    },
+    {
+      "id": "hermes",
+      "title": "Get started with Hermes Agent",
+      "detail": "Open-source, self-improving AI agent by Nous Research that learns reusable skills.",
+      "tools": [
+        "Hermes Agent"
+      ]
+    }
+  ],
+  "challengeCount": 5,
+  "challenges": [
+    "Best Open-Source AI Project",
+    "Best Use of Gemma 4",
+    "Gloriously Overengineered",
+    "Best AI Security Project",
+    "Best Community Impact Project"
+  ],
+  "hardware": {
+    "name": "Arduino UNO Q",
+    "count": 16,
+    "label": "x16 ARDUINO UNO Q",
+    "note": "up for grabs"
+  },
+  "swag": [
+    "T-shirts",
+    "Stickers",
+    "Swag"
+  ],
+  "food": {
+    "morning": "Coffee + bagels",
+    "morningLabel": "COFFEE + BAGELS",
+    "lunch": "Pizza from Mama Rosa's",
+    "lunchLabel": "MAMA ROSA'S PIZZA",
+    "restaurant": "Mama Rosa's"
+  },
+  "registration": {
+    "url": "https://events.mlh.com/events/14937-hacktoberfest-hack-day-hampton-x-revolutionva",
+    "label": "REGISTER FREE ON MLH",
+    "platform": "MLH"
+  },
+  "local": {
+    "motto": "First from the sea, first to the stars",
+    "areaCode": "757",
+    "landmarks": [
+      "Chesapeake Bay",
+      "Old Point Comfort Lighthouse",
+      "NASA Langley Research Center"
+    ]
+  },
+  "infoStrip": "SAT 10.17 · HAMPTON · FREE",
+  "eyebrow": "COMMUNITY HACK DAY",
+  "coldOpenEyebrow": "HAMPTON, VA · 10.17.26",
+  "sponsoredBy": [
+    "The AI Collective Hampton Roads"
+  ],
+  "hostsNote": "MLH page: \"hosted by RevolutionVA with sponsorship thanks to the AI Collective Hampton Roads\"",
+  "challengeDetails": [
+    {
+      "name": "Best Open-Source AI Project",
+      "sponsor": "DigitalOcean",
+      "short": "OPEN-SOURCE AI",
+      "prize": "Hacktoberfest 2026 Winner DEV Badge + MLH Swag Bag",
+      "blurb": "Build with open-source or open-weight AI"
+    },
+    {
+      "name": "Best Use of Gemma 4",
+      "sponsor": "Google DeepMind",
+      "short": "GEMMA 4",
+      "prize": null,
+      "blurb": "Build with Gemma 4, the lightweight open model"
+    },
+    {
+      "name": "Gloriously Overengineered",
+      "sponsor": null,
+      "short": "OVERENGINEERED",
+      "prize": null,
+      "blurb": "Solve a trivial problem with way too much AI"
+    },
+    {
+      "name": "Best AI Security Project",
+      "sponsor": null,
+      "short": "AI SECURITY",
+      "prize": null,
+      "blurb": "Use AI to protect people, or harden AI itself"
+    },
+    {
+      "name": "Best Community Impact Project",
+      "sponsor": null,
+      "short": "COMMUNITY IMPACT",
+      "prize": null,
+      "blurb": "Make life better for a real community"
+    }
+  ],
+  "partners": {
+    "program": [
+      "Hacktoberfest",
+      "MLH",
+      "DEV",
+      "DigitalOcean"
+    ],
+    "challengeSponsors": [
+      "DigitalOcean",
+      "Google DeepMind"
+    ],
+    "venue": "757 Makerspace"
+  }
+}

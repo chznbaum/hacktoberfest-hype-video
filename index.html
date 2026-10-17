@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Hacktoberfest 2026 in the 757: hype video renderer</title>
+<style>
+  @font-face { font-family: "Barlow Semi Condensed"; font-style: normal; font-weight: 500; font-display: block; src: url(assets/fonts/barlow-semi-condensed-latin-500-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Barlow Semi Condensed"; font-style: normal; font-weight: 600; font-display: block; src: url(assets/fonts/barlow-semi-condensed-latin-600-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Barlow Semi Condensed"; font-style: normal; font-weight: 700; font-display: block; src: url(assets/fonts/barlow-semi-condensed-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Barlow Semi Condensed"; font-style: normal; font-weight: 800; font-display: block; src: url(assets/fonts/barlow-semi-condensed-latin-800-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Barlow Semi Condensed"; font-style: normal; font-weight: 900; font-display: block; src: url(assets/fonts/barlow-semi-condensed-latin-900-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 700; font-display: block; src: url(assets/fonts/barlow-condensed-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "Barlow Condensed"; font-style: normal; font-weight: 800; font-display: block; src: url(assets/fonts/barlow-condensed-latin-800-normal.woff2) format("woff2"); }
+  @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 500; font-display: block; src: url(assets/fonts/jetbrains-mono-latin-500-normal.woff2) format("woff2"); }
+  @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 700; font-display: block; src: url(assets/fonts/jetbrains-mono-latin-700-normal.woff2) format("woff2"); }
+  @font-face { font-family: "JetBrains Mono"; font-style: normal; font-weight: 800; font-display: block; src: url(assets/fonts/jetbrains-mono-latin-800-normal.woff2) format("woff2"); }
+  html, body { margin: 0; background: #173B38; }
+  canvas#out { display: block; }
+</style>
+</head>
+<body>
+<canvas id="out" width="1920" height="1080"></canvas>
+<!-- engine boots on load: fonts + content + scenes. See docs/DEV.md. ?preview=1&fmt=16x9&audio=assets/audio/scratch-102bpm.wav for a scrubber. -->
+<script type="module" src="lib/engine.js"></script>
+</body>
+</html>

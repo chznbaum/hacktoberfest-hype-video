@@ -1,0 +1,22 @@
+{
+  "name": "hacktoberfest-hype-video",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Animated pixel-art hype music video for Hacktoberfest 2026 in the 757",
+  "scripts": {
+    "stills": "node tools/stills.mjs",
+    "contact": "node tools/contact.mjs",
+    "render": "node tools/render.mjs",
+    "song-map": "python3 tools/song-map.py",
+    "scratch-audio": "python3 tools/scratch-audio.py",
+    "qr": "node tools/make-qr.mjs",
+    "preview": "node tools/preview.mjs"
+  },
+  "dependencies": {
+    "playwright": "1.56.1"
+  },
+  "devDependencies": {
+    "qrcode": "1.5.4"
+  }
+}

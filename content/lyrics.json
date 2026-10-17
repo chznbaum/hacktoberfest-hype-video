@@ -1,0 +1,274 @@
+{
+ "lines": {
+  "cold": {
+   "text": "(instrumental cold open)",
+   "section": "intro",
+   "instrumental": true,
+   "chant": false
+  },
+  "i.1": {
+   "text": "(Seven! Five! Seven!)",
+   "section": "intro",
+   "instrumental": false,
+   "chant": true
+  },
+  "i.2": {
+   "text": "Revolution V-A and the AI Collective",
+   "section": "intro",
+   "instrumental": false,
+   "chant": false
+  },
+  "i.3": {
+   "text": "Hampton, wake up, it's Hacktoberfest!",
+   "section": "intro",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.1": {
+   "text": "Saturday, October seventeen",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.2": {
+   "text": "Hampton, Virginia, boot up the machine",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.3": {
+   "text": "Ten until four at the 757 Makerspace",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.4": {
+   "text": "Sixteen Murray Street, yeah, you know the place",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.5": {
+   "text": "Coffee and bagels when the morning's new",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.6": {
+   "text": "Bring a laptop, bring a charger, bring the crew",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.7": {
+   "text": "Open-source AI is the mission this year",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v1.8": {
+   "text": "'Cause AI belongs to everyone, so everyone's here!",
+   "section": "v1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.1": {
+   "text": "From the sea to the stars (Hey!)",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.2": {
+   "text": "Hacktoberfest in the Seven-Five-Seven!",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.3": {
+   "text": "Build it in the open, let the whole world in",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.4": {
+   "text": "It's free for everybody, so come on, let's begin!",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.5": {
+   "text": "From the sea to the stars (Hey!)",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.6": {
+   "text": "Hacktoberfest in the Seven-Five-Seven!",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.7": {
+   "text": "Fork it, train it, ship it, show it",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch.8": {
+   "text": "Hampton's 'bout to glow, and you know it!",
+   "section": "ch1",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.1": {
+   "text": "Hands-on session: build a decision model",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.2": {
+   "text": "Unsloth and Hugging Face, full throttle",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.3": {
+   "text": "Fine-tune it on Gemma, let it make the call",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.4": {
+   "text": "Then fire up Hermes Agent, watch it learn it all",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.5": {
+   "text": "Five challenges, prizes on the line",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.6": {
+   "text": "Sixteen Arduino Uno Qs up for grabs this time",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.7": {
+   "text": "T-shirts and stickers and swag in the mix",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "v2.8": {
+   "text": "Mama Rosa's pizza for the midday fix!",
+   "section": "v2",
+   "instrumental": false,
+   "chant": false
+  },
+  "br.1": {
+   "text": "First-timer? Student? Seasoned pro?",
+   "section": "br",
+   "instrumental": false,
+   "chant": false
+  },
+  "br.2": {
+   "text": "Grab a seat, find a team: ready, set, go!",
+   "section": "br",
+   "instrumental": false,
+   "chant": false
+  },
+  "br.3": {
+   "text": "(Seven! Five! Seven!)",
+   "section": "br",
+   "instrumental": false,
+   "chant": true
+  },
+  "br.4": {
+   "text": "(Seven! Five! Seven!)",
+   "section": "br",
+   "instrumental": false,
+   "chant": true
+  },
+  "ch2.1": {
+   "text": "From the sea to the stars (Hey!)",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch2.2": {
+   "text": "Hacktoberfest in the Seven-Five-Seven!",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch2.3": {
+   "text": "Build it in the open, let the whole world in",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch2.4": {
+   "text": "It's free for everybody, so come on, let's begin!",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch2.5": {
+   "text": "From the sea to the stars (Hey!)",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch2.6": {
+   "text": "Hacktoberfest in the Seven-Five-Seven!",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch2.7": {
+   "text": "Fork it, train it, ship it, show it",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "ch2.8": {
+   "text": "Hampton's 'bout to glow, and you know it!",
+   "section": "ch2",
+   "instrumental": false,
+   "chant": false
+  },
+  "out.1": {
+   "text": "Sign up on M-L-H, Saturday, ten A.M.",
+   "section": "out",
+   "instrumental": false,
+   "chant": false
+  },
+  "out.2": {
+   "text": "757 Makerspace, we'll see you then!",
+   "section": "out",
+   "instrumental": false,
+   "chant": false
+  },
+  "out.3": {
+   "text": "(Seven! Five! Seven!)",
+   "section": "out",
+   "instrumental": false,
+   "chant": true
+  },
+  "out.4": {
+   "text": "Hacktoberfest!",
+   "section": "out",
+   "instrumental": false,
+   "chant": false
+  },
+  "tail": {
+   "text": "(tail / ring-out)",
+   "section": "out",
+   "instrumental": true,
+   "chant": false
+  }
+ }
+}

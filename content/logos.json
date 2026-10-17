@@ -1,0 +1,13 @@
+{
+  "_note": "Partner logos. 'file' is null until the host supplies the file; scenes must fall back to a text wordmark (label) in the condensed font. When present, files are transparent PNG alpha masks in assets/logos/ and are drawn TINTED to a palette color (cream by default) so they sit consistently on teal.",
+  "logos": [
+    { "id": "revolutionva", "role": "host", "label": "RevolutionVA", "display": "REVOLUTION VA", "file": "assets/img/revolutionva-logo-cream.png", "kind": "mark" },
+    { "id": "ai-collective", "role": "sponsor", "label": "The AI Collective Hampton Roads", "display": "THE AI COLLECTIVE HAMPTON ROADS", "file": null, "kind": "wordmark" },
+    { "id": "757-makerspace", "role": "venue", "label": "757 Makerspace", "display": "757 MAKERSPACE", "file": null, "kind": "badge" },
+    { "id": "hacktoberfest", "role": "program", "label": "Hacktoberfest", "display": "HACKTOBERFEST", "file": null, "kind": "wordmark" },
+    { "id": "mlh", "role": "program", "label": "Major League Hacking", "display": "MLH", "file": null, "kind": "wordmark" },
+    { "id": "dev", "role": "program", "label": "DEV", "display": "DEV", "file": null, "kind": "wordmark" },
+    { "id": "digitalocean", "role": "program", "label": "DigitalOcean", "display": "DIGITALOCEAN", "file": null, "kind": "wordmark" },
+    { "id": "google-deepmind", "role": "challenge", "label": "Google DeepMind", "display": "GOOGLE DEEPMIND", "file": null, "kind": "wordmark" }
+  ]
+}

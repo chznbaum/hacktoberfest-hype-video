@@ -20,12 +20,13 @@ Read all of it before writing code. If something here conflicts with your instin
 | Who | Open to all ages; beginners welcome; students encouraged; pros welcome |
 | Bring | Laptop + charger (+ curiosity; a project idea is optional) |
 | Hosts | Chazona Baum and Ryan McGovern |
-| Hosted / sponsored by | **RevolutionVA** and **The AI Collective Hampton Roads** |
+| Hosted by | **RevolutionVA** |
+| Sponsored by | **The AI Collective Hampton Roads** (MLH page wording: "hosted by RevolutionVA with sponsorship thanks to the AI Collective Hampton Roads"). Never call the AI Collective a host |
 | Global program | Hacktoberfest 2026, run by MLH (Major League Hacking) + DEV, presented by DigitalOcean |
 | 2026 global theme | **"AI belongs to everyone"**: learning and building with open-source / open-weight AI |
 | Hands-on session 1 | Build/train your own **decision model** (a "Jev-style" decision model: an LLM fine-tuned to read an input, score the options you give it, and return a choice with a probability). Tools: **Unsloth**, **Hugging Face**, optionally **Gemma** (Gemma 4) |
 | Hands-on session 2 | Get started with **Hermes Agent** (open-source, self-improving AI agent by Nous Research; it learns reusable skills) |
-| Challenges | **5 challenges total** (prize tracks). One is MLH's **Best Open-Source AI Project**. The other four names are TBD; read them from `content/facts.json` `challenges[]`, never hard-code them |
+| Challenges | **5 challenges** (read from `content/facts.json` `challenges[]` / `challengeDetails[]`): **Best Open-Source AI Project** (sponsor: DigitalOcean; prize: Hacktoberfest 2026 Winner DEV Badge + MLH Swag Bag), **Best Use of Gemma 4** (Google DeepMind), **Gloriously Overengineered** (solve a trivial problem with absurdly rigorous AI, e.g. a multi-agent council debating whether toast is done), **Best AI Security Project** (use AI to protect people, or make AI harder to misuse), **Best Community Impact Project** (make life better for a real community). No other prize details are confirmed |
 | Hardware | **16 Arduino UNO Q boards** "up for grabs". Do NOT say how they're distributed (no "raffle", no "winners get", no "everyone gets") |
 | Swag | T-shirts, stickers, and similar swag. NEVER imply everyone gets a T-shirt (quantities are limited) |
 | Food | Morning: **coffee + bagels**. Lunch: **pizza from Mama Rosa's** (local Hampton Italian restaurant) |
@@ -190,7 +191,7 @@ Clips are bound to lyric cues, not seconds. `from`/`to` are line IDs (start of `
 |---|---|---|---|---|
 | C01 | `cold-open` | intro bars 0-3 | Night over the bay: twinkling stars, water shimmer, lighthouse beam sweeps; a tiny mono eyebrow fades in (`HAMPTON, VA · 10.17.26`). Builds anticipation. | A |
 | C02 | `chant-757` | i.1 | Giant pixel-block digits **7 · 5 · 7** slam in one per chant hit (beat-locked), screen shake + pixel dust. | A |
-| C03 | `hosts` | i.2 | "RevolutionVA × The AI Collective Hampton Roads": a hosted-by panel styled like the key art. | A |
+| C03 | `hosts` | i.2 | HOSTED BY RevolutionVA + SPONSORED BY The AI Collective Hampton Roads: panel(s) styled like the key art. | A |
 | C04 | `wake-up` | i.3 | Sunrise bursts over the bay (night palette → teal day), gulls take off, **HACKTOBERFEST** flashes. | A |
 | C05 | `calendar` | v1.1 | Pixel tear-off calendar page flips to SAT · OCT 17, autumn leaves drift. Label: `SAT 10.17`. | B |
 | C06 | `boot` | v1.2 | Pixel CRT/laptop boots: BIOS-style boot lines, progress bar, "HAMPTON.EXE" vibe. | B |
@@ -214,7 +215,7 @@ Clips are bound to lyric cues, not seconds. `from`/`to` are line IDs (start of `
 | C24 | `builders` | br.1–br.2 | Darker, intimate: three pixel builders at laptops (first-timer, student, pro) light up one by one, then READY · SET · GO countdown. | A |
 | C25 | `chant-757-b` | br.3–br.4 | Chant variation at night: 7-5-7 as constellations/neon, building tension into final chorus. | A |
 | C26–C30 | same scenes as C12–C16 with `variant: 2` | ch2.1–ch2.8 | Bigger: night-time version, fireworks/stars, more sparkles, faster cuts. | D |
-| C31 | `endcard` | out.1–end | Key-art-style end card: HACKTOBERFEST 2026 in the 757, COMMUNITY HACK DAY eyebrow, `||| SAT OCT 17 • 10 AM–4 PM`, `757 Makerspace · 16 Murray St, Hampton`, coral chip `FREE · BEGINNERS WELCOME`, a pixel QR code to the MLH URL with `REGISTER FREE ON MLH`, hosted-by panel (RevolutionVA × The AI Collective Hampton Roads), animated lighthouse + water. Holds long enough to read and scan. | G |
+| C31 | `endcard` | out.1–end | Key-art-style end card: HACKTOBERFEST 2026 in the 757, COMMUNITY HACK DAY eyebrow, `||| SAT OCT 17 • 10 AM–4 PM`, `757 Makerspace · 16 Murray St, Hampton`, coral chip `FREE · BEGINNERS WELCOME`, a pixel QR code to the MLH URL with `REGISTER FREE ON MLH`, hosted-by panel (HOSTED BY RevolutionVA · SPONSORED BY The AI Collective Hampton Roads), animated lighthouse + water. Holds long enough to read and scan. | G |
 
 ---
 
