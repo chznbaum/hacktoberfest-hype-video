@@ -250,7 +250,7 @@ export default {
       cloud(p, 170 + (R(tq * 2) % 30), 12, { kind: 'big' });
       cloud(p, 20 + (R(tq * 1.5) % 20), 140, { kind: 'small' });
     }
-    for (const [gx, gy, ph] of v ? [[118, 80, 0], [130, 88, 0.5]] : [[246, 18, 0], [258, 24, 0.5]]) {
+    for (const [gx, gy, ph] of v ? [[44, 18, 0], [56, 25, 0.5]] : [[246, 18, 0], [258, 24, 0.5]]) {
       gull(p, gx + R(Math.sin(tq * 0.7 + ph * 6) * 3), gy, t, { phase: ph, rate: 2 });
     }
 
@@ -281,9 +281,9 @@ export default {
     // OPEN sign hangs in the door glass, flips on at the downbeat of v1.3
     const openOn = t >= B(0);
     const oy = b.gf + 20;
-    rect(p, doorX - 8, oy, 17, 7, openOn ? C.cream : TRIM.sh);
+    rect(p, doorX - 8, oy, 19, 7, openOn ? C.cream : TRIM.sh);
     hline(p, doorX - 6, doorX + 6, oy - 2, RAMP.stone[1]);
-    pixelText(p, 'OPEN', doorX + 1, oy + 1, openOn ? C.coral : TRIM.dk, { font: 'tiny', align: 'center' });
+    pixelText(p, 'OPEN', doorX + 2, oy + 1, openOn ? RAMP.roof[2] : TRIM.dk, { font: 'tiny', align: 'center' });
 
     // clock: hands sweep 10 -> 4 across v1.3 (eased, on twos), land on beat 3, ding
     const cl = Lw.clock;

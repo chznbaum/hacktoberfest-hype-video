@@ -5,8 +5,9 @@ import { C, RAMP } from '../lib/palette.js';
 import { tween, ease, onTwos, clamp, hash, snap } from '../lib/motion.js';
 import { rect, px, hline, vline, dither, pixelText, pixelTextWidth, makeCanvas } from '../lib/pixel.js';
 import { text, bars, anim, corners, plus, measure, capRatio } from '../lib/text.js';
-import { leaves, cloud, sun, sparkle, water, gull } from '../lib/world.js';
-import { cueOr, beatT, bigNumber, bigLeaves, drawRotated, ellipsePoints, strokePts, R } from './_B-kit.js';
+import { leaves, cloud, sun, sparkle, water, gull, grass, seawall } from '../lib/world.js';
+import { SPB, cueOr, beatT, bigNumber, bigLeaves, drawRotated, ellipsePoints, strokePts, R } from './_B-kit.js';
+import { autumnTree } from './_B-world.js';
 
 const DAYS = [
   { n: 13, wd: 'TUE' }, { n: 14, wd: 'WED' }, { n: 15, wd: 'THU' }, { n: 16, wd: 'FRI' }, { n: 17, wd: 'SAT' },
@@ -125,13 +126,18 @@ export default {
     } else {
       sun(p, 148, 32, 9, { t, rays: true });
       cloud(p, 8 + R(tq * 2) % 20, 28, { kind: 'twoTone' });
-      cloud(p, 120 + R(tq * 1.2) % 14, 196, { kind: 'small' });
-      water(p, t, { x: 0, y: 290, w: PW, h: PH - 290, tod: 'day', fade: 'none', seed: 11 });
+      cloud(p, 112 + R(tq * 1.2) % 14, 262, { kind: 'small' });
+      water(p, t, { x: 0, y: 294, w: PW, h: PH - 294, tod: 'day', fade: 'none', seed: 11 });
+      // a scrap of key-art shoreline for the tree to stand on
+      grass(p, 0, 284, 46, 4, { seed: 3 });
+      seawall(p, 0, 288, 52, 8, { seed: 6 });
     }
-    for (const [gx, gy, ph] of v ? [[30, 214, 0], [42, 222, 0.5]] : [[296, 70, 0], [306, 78, 0.4]]) {
+    for (const [gx, gy, ph] of v ? [[18, 38, 0], [30, 45, 0.5]] : [[296, 70, 0], [306, 78, 0.4]]) {
       gull(p, gx + R(Math.sin(tq * 0.8 + ph * 6) * 2), gy, t, { phase: ph, rate: 2.2 });
     }
-    // small leaves behind the pad
+    // autumn tree peeking in at the bottom-left; small leaves drift behind the pad
+    if (v) autumnTree(p, 20, 286, { w: 44, h: 66, seed: 5 });
+    else autumnTree(p, 22, 190, { w: 52, h: 78, seed: 5 });
     leaves(p, t, { count: v ? 12 : 14, seed: 23, wind: 10, speed: 13 });
 
     // ---- the pad (hops 2px when the 17 lands, 1px on later beats)
@@ -159,13 +165,14 @@ export default {
     }
 
     // ---- torn pages tumbling away (in front of the pad)
+    const tempo = SPB / Math.max(0.15, B(1) - B(0));
     for (let i = 0; i < 4; i++) {
       const td = tears[i];
       if (t < td) continue;
-      const k = onTwos(t - td);
+      const k = onTwos(t - td) * tempo;                  // flight measured in beats, so it reads the same at any tempo
       const dir = i % 2 ? -1 : 1;                       // spin direction
-      const vx = (v ? 130 : 210) * (0.85 + hash(i, 1, 9) * 0.3);
-      const vy = -(v ? 150 : 110) * (0.8 + hash(i, 2, 9) * 0.4);
+      const vx = (v ? 150 : 210) * (0.85 + hash(i, 1, 9) * 0.3);
+      const vy = -(v ? 170 : 110) * (0.8 + hash(i, 2, 9) * 0.4);
       const gr = v ? 160 : 120;
       const cx0 = x + G.W / 2, cy0 = y + G.HH + G.H / 2;
       const X = cx0 + vx * k + Math.sin(k * 9 + i) * 3;
@@ -187,6 +194,13 @@ export default {
     // big leaves in front
     bigLeaves(p, t, { n: v ? 5 : 6, seed: 5, wind: 16, fall: 15 });
 
+    // key-art gold plus by the pad's top-right corner: pops with the 17, pulses on the beat after
+    if (t >= reveal) {
+      const pk = tween(t, reveal, 0.2, ease.outBack);
+      const px0 = (x + G.W + 10) * 6, py0 = (y - 2) * 6;
+      plus(hi, px0, py0, { scale: pk * (0.85 + 0.3 * c.pulse(t, 0.3)) });
+    }
+
     // ---- type: ||| SAT 10.17 lands with the 17
     const F = c.facts;
     const label = `${F.date.weekdayShort} ${F.date.numeric}`;
@@ -207,7 +221,7 @@ export default {
       const m = measure(hi, label, { role: 'mono', size });
       const bw = 96;
       const total = bw + 36 + m.w;
-      const bx = snap(s.cx - total / 2), by = snap(1290 - cap / 2 - 18);
+      const bx = snap(s.cx - total / 2), by = snap(1230 - cap / 2 - 18);
       const bh = snap(cap + 36);
       anim(hi, t, { t0: reveal, x: bx, y: by, enter: 'cut' }, (h) => bars(h, bx, by, bh, { grow: tween(t, reveal, 0.18) }));
       const tx = bx + bw + 36;

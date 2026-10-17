@@ -189,6 +189,9 @@ export default {
         dither(p, sx, sy, sw, sh, SCR.bg, SCR.txt, 0.5);
       } else if (t < clear) {
         // BIOS lines, one per 3/8 beat, typed fast
+        // classic BIOS dressing: vendor logo top-right, setup hint along the bottom
+        drawSprite(p, LOGO, sx + sw - 13, sy + 6, { anchor: 'tc' });
+        if (t > B(0.5)) pixelText(p, 'PRESS F1 TO HACK', sx + 6, sy + sh - 10, frameIndex(t, 3, 2) ? SCR.txt : SCR.hot, { font: 'tiny' });
         const lines = bios(F);
         const lh = 11;
         const x0 = sx + 6, y0 = sy + 7;
@@ -196,7 +199,8 @@ export default {
         lines.forEach((ln, i) => {
           const t0 = B(0.3 + i * 0.36);
           if (t < t0) return;
-          const n = Math.min(ln.s.length, Math.floor(onTwos(t - t0) * 90) + 1);
+          const cps = 60 / Math.max(0.2, B(1) - B(0));          // ~0.3 beat per line at any tempo
+          const n = Math.min(ln.s.length, Math.floor(onTwos(t - t0) * cps) + 1);
           const str = ln.s.slice(0, n);
           pixelText(p, str, x0, y0 + i * lh, ln.col || SCR.txt, FT);
           if (ln.ok && n >= ln.s.length && t > t0 + 0.12) pixelText(p, 'OK', x0 + pixelTextWidth(ln.s + ' ', FT) + 1, y0 + i * lh, C.gold, FT);
