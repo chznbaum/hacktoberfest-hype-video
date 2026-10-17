@@ -48,14 +48,15 @@ export default {
     const OW = TW + 2, OH = TH + 2;
     L.shelves.forEach((s, si) => {
       // lower shelves: awards drop in from behind the shelf above (clipped under its plank)
-      const clipY = si === 0 ? -100 : L.shelves[si - 1].y + 6;
+      // awards drop in from just under the light rail (top shelf) or from behind the shelf above (lower shelf)
+      const clipY = si === 0 ? s.rail - 5 : L.shelves[si - 1].y + 6;
       px.save();
       px.beginPath(); px.rect(0, Math.max(0, clipY), g.PW, g.PH); px.clip();
       for (const [i, x] of s.items) {
         const tl = lands[i];
         if (t < tl - fall) continue;
         const kf = clamp((t - (tl - fall)) / fall);
-        const dist = si === 0 ? s.y + 8 : s.y + 1 - clipY;
+        const dist = s.y + 1 - clipY;
         const dy = t < tl ? -R(dist * (1 - ease.inQuad(kf))) : 0;
         const base = s.y + 1 + dy;
         const [dw, dh] = squashAt(t, tl, 1);

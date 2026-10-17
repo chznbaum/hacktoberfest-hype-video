@@ -6,15 +6,15 @@ import { C, RAMP } from '../lib/palette.js';
 import { ease, clamp, tween, onTwos, hash } from '../lib/motion.js';
 import { rect, px as dot, dither, pixelText } from '../lib/pixel.js';
 import { sparkle } from '../lib/world.js';
-import { clock, painter, steam, lbl, R } from './_F-kit.js';
+import { clock, painter, wisp, lbl, R } from './_F-kit.js';
 
 const RF = RAMP.roof, ST = RAMP.stone, GL = RAMP.glow, AU = RAMP.autumn, F = RAMP.foliage;
 const SLICE = { a0: (112.5 * Math.PI) / 180, a1: (157.5 * Math.PI) / 180 }; // wedge pulled toward the lower-left
 const DIR = (135 * Math.PI) / 180;
 
 const LAYOUT = {
-  '16x9': { B: 112, x: 188, y: 54, open: 118, cloth: { x: 166, y: -2, w: 160, h: 186 }, pull: 30 },
-  '9x16': { B: 136, x: 22, y: 140, open: 112, cloth: { x: -2, y: 104, w: 186, h: 220 }, pull: 30 },
+  '16x9': { B: 112, x: 188, y: 56, open: 118, cloth: { x: 176, y: 44, w: 146, h: 140 }, pull: 34 },
+  '9x16': { B: 136, x: 22, y: 152, open: 108, cloth: { x: 8, y: 138, w: 164, h: 190 }, pull: 34 },
 };
 
 // ---------------------------------------------------------------- art
@@ -114,33 +114,32 @@ function lidOutside(B) {
 }
 /** Lid inside (open): paler kraft, a fold crease and grease marks. */
 function lidInside(B) {
-  return painter('plid-in2|' + B, B, B, (p) => {
+  return painter('plid-in5|' + B, B, B, (p) => {
     p.rect(0, 0, B, B, ST[6]);
     p.rect(0, 0, B, 2, ST[4]);
     p.rect(0, 0, 1, B, ST[5]); p.rect(B - 1, 0, 1, B, ST[4]);
     p.rect(0, B - 1, B, 1, ST[3]);
-    for (let i = 0; i < 5; i++) {
-      const gx = 14 + R(hash(i, 4, 5) * (B - 30)), gy = R(B * 0.35 + hash(i, 5, 5) * B * 0.45), rr = 3 + (i % 3);
-      for (let y = -rr; y <= rr; y++) for (let x = -rr - 1; x <= rr + 1; x++) {
-        const d = Math.hypot(x / 1.3, y);
-        if (d <= rr) dither(p.ctx, gx + x, gy + y, 1, 1, null, d < rr * 0.5 ? ST[4] : ST[5], 0.5);
-      }
+    p.rect(6, 6, B - 12, 2, RF[3]); p.rect(6, 6, 2, B - 12, RF[3]); p.rect(B - 8, 6, 2, B - 12, RF[3]); p.rect(6, B - 8, B - 12, 2, RF[3]);
+    for (let i = 0; i < 4; i++) {
+      const gx = 16 + R(hash(i, 4, 5) * (B - 34)), gy = R(B * 0.42 + hash(i, 5, 5) * B * 0.38), w = 4 + (i % 3) * 2;
+      p.rect(gx + 1, gy, w - 2, 1, ST[5]); p.rect(gx, gy + 1, w, 1, ST[5]); p.rect(gx + 1, gy + 2, w - 2, 1, ST[5]);
     }
-    p.rect(4, R(B * 0.18), B - 8, 1, ST[5]);
   });
 }
 function gingham(px, { x, y, w, h }) {
   const sz = 10;
+  // a gingham placemat on the teal table: soft drop shadow, hem, checks
+  dither(px, x + 3, y + 3, w, h, null, C.tealDeep, 0.5);
   rect(px, x, y, w, h, RAMP.tower[3]);
   for (let yy = y; yy < y + h; yy += sz) for (let xx = x; xx < x + w; xx += sz) {
     const cx = Math.floor((xx - x) / sz), cy = Math.floor((yy - y) / sz);
     const a = cx % 2 === 0, b = cy % 2 === 0;
-    if (a && b) rect(px, xx, yy, sz, sz, RF[3]);
-    else if (a || b) dither(px, xx, yy, sz, sz, RAMP.tower[3], RF[3], 0.5);
+    const ww = Math.min(sz, x + w - xx), hh = Math.min(sz, y + h - yy);
+    if (a && b) rect(px, xx, yy, ww, hh, RF[3]);
+    else if (a || b) dither(px, xx, yy, ww, hh, RAMP.tower[3], RF[3], 0.5);
   }
-  // hem: a darker coral line along the inner edge
-  if (x > 0) { rect(px, x, y, 1, h, RF[1]); dither(px, x - 2, y, 2, h, null, C.tealDeep, 0.5); }
-  if (y > 0) { rect(px, x, y, w, 1, RF[1]); dither(px, x, y - 2, w, 2, null, C.tealDeep, 0.5); }
+  rect(px, x, y, w, 1, RF[4]); rect(px, x, y, 1, h, RF[4]);
+  rect(px, x, y + h - 1, w, 1, RF[1]); rect(px, x + w - 1, y, 1, h, RF[1]);
 }
 
 export default {
@@ -154,7 +153,8 @@ export default {
     const pcx = X + Math.floor(B / 2), pcy = Y + Math.floor(B / 2);
     const tq = onTwos(t);
     const tOpen = k.b0;                  // reveal on the downbeat
-    const tPull0 = k.beat(1), tPull1 = k.beat(2.4);
+    // the slice pull lands before the 2-beat dither dissolve into C24 takes over the end of this clip
+    const tPull0 = k.beat(0.5), tPull1 = k.beat(1.6);
 
     gingham(px, L.cloth);
     // box drop shadow on the cloth
@@ -171,7 +171,7 @@ export default {
     if (ang <= 0) {
       px.drawImage(lidOutside(B), X, Y - hop);
       // steam leaking out of the closed lid's seams
-      for (let i = 0; i < 3; i++) steam(px, X + 20 + i * (B / 3), Y + 8, t + i * 0.3, { h: 20, amp: 1, seed: i + 2, w: 2, col: RAMP.cloud[2], col2: RAMP.cloud[1] });
+      for (let i = 0; i < 3; i++) wisp(px, X + 20 + R(i * (B / 3)), Y + 10, t, { len: 12, rise: 14, amp: 1.5, seed: i + 2, period: 0.9, edge: RAMP.cloud[1] });
     } else {
       px.drawImage(boxArt(B), X, Y);
       // pizza without the slice, then the hole's grease + cheese strings, then the slice on top
@@ -192,13 +192,12 @@ export default {
           for (let j = 0; j <= n; j++) {
             const u = j / n;
             if (broken && u > 0.38 && u < 0.62) continue;
-            const thin = Math.abs(u - 0.5) < 0.3 && dist > 14;
-            if (thin && j % 2 && dist > 24) continue;
-            const wob = Math.sin(u * Math.PI) * (1.5 + Math.sin(tq * 10 + si) * 1.2);
+            const thin = Math.abs(u - 0.5) < 0.32 && dist > 16;
+            const wob = Math.sin(u * Math.PI) * (2 + Math.sin(tq * 10 + si) * 1.2);
             const sx = R(ax + (bx - ax) * u + Math.cos(DIR + Math.PI / 2) * wob), sy = R(ay + (by - ay) * u + Math.sin(DIR + Math.PI / 2) * wob);
             dot(px, sx, sy, u < 0.12 || u > 0.88 ? GL[3] : GL[4]);
-            dot(px, sx, sy + 1, GL[2]);
-            if (!thin) { dot(px, sx + 1, sy, GL[3]); dot(px, sx + 1, sy + 1, GL[2]); }
+            dot(px, sx, sy + 1, thin ? GL[3] : GL[2]);
+            if (!thin) { dot(px, sx + 1, sy, GL[4]); dot(px, sx + 1, sy + 1, GL[2]); }
           }
         });
       }
@@ -228,9 +227,9 @@ export default {
       const n = 4;
       for (let i = 0; i < n; i++) {
         const sxp = pcx - r * 0.6 + (i * r * 1.2) / (n - 1);
-        steam(px, R(sxp), pcy - 6 + (i % 2) * 8, t + i * 0.27, { h: since < 0.4 ? 34 : 24, amp: 2, seed: i + 5, speed: since < 0.4 ? 30 : 16, w: 2 });
+        for (let j = 0; j < 2; j++) wisp(px, R(sxp) + j * 3, pcy - 2 + (i % 2) * 10, t, { len: since < 0.35 ? 22 : 16, rise: since < 0.35 ? 30 : 20, amp: 2, period: since < 0.35 ? 0.7 : 1.1, seed: i * 2 + j + 5, edge: RAMP.cloud[1] });
       }
-      if (pk > 0.3) steam(px, pcx - R(r * 0.45) + ox, pcy + R(r * 0.4) + oy - lift, t, { h: 20, amp: 1, seed: 9, w: 2 });
+      if (pk > 0.3) for (let j = 0; j < 2; j++) wisp(px, pcx - R(r * 0.45) + ox + j * 4, pcy + R(r * 0.45) + oy - lift, t, { len: 14, rise: 16, amp: 1.5, seed: 21 + j, edge: RAMP.cloud[1] });
       if (since >= 0) sparkle(px, pcx + R(r * 0.5), pcy - R(r * 0.55), t, tOpen + 0.05, { size: 2, dur: 0.32 });
       if (t >= tPull1) sparkle(px, pcx - R(r * 0.7) + ox, pcy + R(r * 0.2) + oy, t, tPull1 + 0.02, { size: 2, dur: 0.32 });
     }

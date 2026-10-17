@@ -248,7 +248,7 @@ export function impact(ctx, cx, cy, k, { r = 8, col = C.cream } = {}) {
   }
 }
 /** Rising pixel steam curls (1px columns that wiggle), on twos. */
-export function steam(ctx, x, base, t, { h = 24, amp = 2, seed = 1, speed = 14, show = 1, col = C.cream, col2 = RAMP.cloud[2], w = 1 } = {}) {
+export function steam(ctx, x, base, t, { h = 24, amp = 2, seed = 1, speed = 14, show = 1, col = C.cream, col2 = RAMP.cloud[2], w = 1, edge = null } = {}) {
   if (show <= 0) return;
   const tq = onTwos(t);
   const seg = 6, period = h + seg * 2;
@@ -261,8 +261,32 @@ export function steam(ctx, x, base, t, { h = 24, amp = 2, seed = 1, speed = 14, 
       const fade = up / h;
       if (fade > 0.7 && (i + Math.floor(tq * 15)) % 2) continue;
       const xx = R(x + Math.sin((yy + seed * 5) * 0.35 + tq * 3) * amp * (0.4 + fade));
-      rect(ctx, xx, R(yy), fade > 0.6 ? 1 : w, 1, fade > 0.55 ? col2 : col);
+      const ww = fade > 0.6 ? 1 : w;
+      if (edge) px(ctx, xx + ww, R(yy), edge);
+      rect(ctx, xx, R(yy), ww, 1, fade > 0.55 ? col2 : col);
     }
+  }
+}
+
+/**
+ * One continuous steam wisp: a 1px S-curve (2px at the base) that rises from (x, base) and dithers out as it climbs.
+ * Loops every `period` seconds (phase offset by seed). edge = optional 1px shade on the right so it reads over light food.
+ */
+export function wisp(ctx, x, base, t, { len = 16, rise = 18, amp = 2, period = 1.1, seed = 0, col = C.cream, colTop = RAMP.cloud[2], edge = null, show = 1 } = {}) {
+  if (show <= 0) return;
+  const tq = onTwos(t);
+  const ph = mod(tq / period + hash(seed, 3, 11), 1);
+  const y0 = base - ph * rise;
+  for (let i = 0; i < len; i++) {
+    const y = R(y0 - i);
+    const u = i / len;
+    const fade = ph * 0.7 + u * 0.55;
+    if (fade > 1.05) continue;
+    if (fade > 0.8 && (i + Math.floor(tq * 15)) % 2) continue;
+    const xx = R(x + Math.sin(y * 0.3 + seed * 1.7 + tq * 3) * amp * (0.4 + u));
+    if (edge) px(ctx, xx + 1, y, edge);
+    px(ctx, xx, y, u > 0.55 ? colTop : col);
+    if (u < 0.25 && ph < 0.5) px(ctx, xx - 1, y, col);
   }
 }
 

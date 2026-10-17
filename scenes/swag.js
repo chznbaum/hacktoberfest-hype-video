@@ -13,7 +13,7 @@ const RF = RAMP.roof, T = RAMP.tower, IR = RAMP.iron, W = RAMP.water;
 
 // ---------------------------------------------------------------- art
 function teeArt() {
-  return painter('tee2', 46, 42, (p) => {
+  return painter('tee3', 46, 42, (p) => {
     const c = p.ctx;
     // silhouette: sleeves + body (coral), then shading passes
     poly(c, [[11, 1], [17, 0], [28, 0], [34, 1], [45, 10], [40, 17], [35, 13], [35, 41], [10, 41], [10, 13], [5, 17], [0, 10]], RF[3]);
@@ -24,7 +24,7 @@ function teeArt() {
     for (let x = 10; x <= 35; x++) p.put(x, 41, RF[1]);              // hem
     for (const [x, y] of [[4, 15], [5, 16], [41, 15], [40, 16]]) p.put(x, y, RF[1]); // sleeve hems
     // folds (soft vertical creases)
-    for (const [x, y] of [[12, 14], [13, 15], [33, 14], [32, 15], [16, 37], [17, 38], [28, 36], [29, 37]]) p.put(x, y, RF[2]);
+    for (const [x, y] of [[12, 14], [13, 15], [33, 14], [32, 15]]) p.put(x, y, RF[2]);
     // neckline (cut out) + collar band
     for (let y = 0; y <= 4; y++) for (let x = 17; x <= 28; x++) {
       const d = ((x - 22.5) / 6) ** 2 + ((y + 1) / 5.2) ** 2;
@@ -88,6 +88,16 @@ const STK = {
 };
 function sticker(name) {
   return outlined('stk|' + name, STK[name](), C.cream);
+}
+/** Solid / dithered silhouette of a sticker (for its edge thickness on the lid and its flight shadow). */
+function silh(name, art, col, level = 1) {
+  return painter(`stk-sil|${name}|${col}|${level}`, art.width, art.height, (p) => {
+    p.ctx.drawImage(art, 0, 0);
+    p.ctx.globalCompositeOperation = 'source-in';
+    if (level >= 1) p.rect(0, 0, art.width, art.height, col);
+    else dither(p.ctx, 0, 0, art.width, art.height, null, col, level);
+    p.ctx.globalCompositeOperation = 'source-over';
+  });
 }
 /** The peeled-off spot left on the backing paper: the sticker's silhouette in a slightly darker cream. */
 function backing(name, art) {
@@ -183,16 +193,13 @@ export default {
         const fx = R(ex + (ox - ex) * e), fy = R(ey + (oy - ey) * e - Math.sin(kf * Math.PI) * 18);
         // flying sticker: bigger shadow offset = higher off the lid
         const lift = R((1 - kf) * 5) + 1;
-        dither(px, fx + lift, fy + lift, art.width, art.height, null, IR[0], 0.5);
+        px.drawImage(silh(name, art, kf < 0.4 ? T[1] : IR[0], 0.5), fx + lift, fy + lift);
         px.drawImage(art, fx, fy);
         return;
       }
       const [dw, dh] = (() => { const f = Math.floor((t - ts) * 30); return f < 2 ? [2, -2] : [0, 0]; })();
       // stuck: 1px dark contact shadow, then the sticker
-      px.save();
-      px.globalAlpha = 1;
-      dither(px, ox + 1, oy + 1, art.width, art.height, null, IR[0], 0.5);
-      px.restore();
+      px.drawImage(silh(name, art, IR[1]), ox + 1, oy + 1);
       if (dw) drawSquash(px, art, ox + art.width / 2, oy + art.height, dw, dh);
       else px.drawImage(art, ox, oy);
       impact(px, tx, ty, t - ts, { r: Math.max(art.width, art.height) / 2 + 2, col: C.cream });

@@ -14,7 +14,7 @@ export const BW = 34, BH = 26; // board footprint (USB-C sticks out 2px on the l
 
 /** The UNO Q board, top view, lit from the upper-left. Canvas 36x26; board body at x 2..35. */
 export function boardArt() {
-  const raw = painter('unoq-board2', BW + 2, BH, (p) => {
+  const raw = painter('unoq-board3', BW + 2, BH, (p) => {
     const ox = 2;
     const put = p.put;
     for (let y = 0; y < BH; y++) for (let x = 0; x < BW; x++) {
@@ -53,10 +53,10 @@ export function boardArt() {
       put(ox + hx, hy, RAMP.ink[0]);
     }
     // silkscreen: pin-1 ticks + a small white label box
-    for (let x = 4; x <= 11; x++) { put(ox + x, 19, T[3]); }
-    put(ox + 4, 20, T[3]); put(ox + 11, 20, T[3]);
+    for (const x of [4, 5, 6, 8, 9, 10, 11]) put(ox + x, 18, T[3]);
+    for (const x of [4, 5, 7, 8, 9]) put(ox + x, 20, T[2]);
   });
-  return outlined('unoq-board2', raw, RAMP.ink[0]);
+  return outlined('unoq-board3', raw, RAMP.ink[0]);
 }
 // LED matrix origin on the outlined canvas (+1 outline, +2 USB-C offset)
 const LED = { x: 1 + 2 + 16, y: 1 + 4 };
@@ -103,13 +103,17 @@ export default {
     const board = boardArt();
     const tq = onTwos(t);
 
+    // 9:16: the type sits above the pegboard, so boards drop in from the panel's top edge (clipped), not through it
+    const clipTop = c.fmt === '9x16' ? L.panel[1] + 1 : 0;
+    px.save();
+    px.beginPath(); px.rect(0, clipTop, g.PW, g.PH); px.clip();
     for (let cell = 0; cell < n; cell++) {
       const r = Math.floor(cell / cols), cc = cell % cols;
       const x = L.gx + cc * (BW + L.gap), y = L.gy + r * (BH + L.gap);
       const tl = landAt[cell];
       if (t < tl - fall) continue;
       const kf = clamp((t - (tl - fall)) / fall);
-      const dy = t < tl ? -R((y + BH + 10) * (1 - ease.inQuad(kf))) : 0;
+      const dy = t < tl ? -R((y - clipTop + BH + 10) * (1 - ease.inQuad(kf))) : 0;
       const [dw, dh] = squashAt(t, tl, 1);
       // drop shadow on the pegboard (only once it is close)
       if (dy > -8) dither(px, x + 2, y + 3, BW, BH, null, C.tealDeep, 0.5);
@@ -136,6 +140,7 @@ export default {
         if (cell % 3 === 0) sparkle(px, x + 4, y + 4, t, tl + 0.03, { size: 2, dur: 0.28 });
       }
     }
+    px.restore();
     if (t >= tWave) for (let i = 0; i < 4; i++) sparkle(px, L.gx + 10 + i * 37, L.gy - 4 + (i % 2) * 120, t, tWave + i * 0.05, { size: 2, dur: 0.35 });
 
     // ---- type: ×16 with the vocal, ARDUINO / UNO Q on the downbeat
