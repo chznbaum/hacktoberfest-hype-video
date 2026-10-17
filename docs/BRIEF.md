@@ -30,7 +30,7 @@ Read all of it before writing code. If something here conflicts with your instin
 | Hardware | **16 Arduino UNO Q boards** "up for grabs". Do NOT say how they're distributed (no "raffle", no "winners get", no "everyone gets") |
 | Swag | T-shirts, stickers, and similar swag. NEVER imply everyone gets a T-shirt (quantities are limited) |
 | Food | Morning: **coffee + bagels**. Lunch: **pizza from Mama Rosa's** (local Hampton Italian restaurant) |
-| Registration | Register free on MLH: `https://events.mlh.io/events/14937-hacktoberfest-hack-day-hampton-x-revolutionva` |
+| Registration | Register free on MLH: `https://events.mlh.com/events/14937-hacktoberfest-hack-day-hampton-x-revolutionva` (the host's link; the MLH page source also lists events.mlh.io for the same event) |
 | Local flavor | Hampton, VA is "First from the sea, first to the stars": the Chesapeake Bay waterfront, the Old Point Comfort Lighthouse (the lighthouse in the key art), and NASA Langley Research Center (where America's first astronauts trained). "757" is the Hampton Roads area code and community name |
 
 Things we must not claim: specific prize items for challenges (beyond the names), that everyone gets a shirt or a board, how boards are distributed, swag bags, any numbers that aren't listed above, any brand logos we don't have files for. Write tool and brand names as plain text; don't draw anyone's logo (draw a generic friendly sloth, a gem, a winged sandal, etc. instead).
