@@ -17,7 +17,7 @@ const R = Math.round;
 const LAYOUT = {
   '16x9': { win: { x: 56, y: 12, w: 208, h: 68 }, table: 136, depth: 10, xs: [72, 160, 248], lightsY: [3, 16], chipY: 984, wordY: 276,
     props: { pumpkin: 26, notes: 116, board: 202, mug: 290 } },
-  '9x16': { win: { x: 12, y: 46, w: 156, h: 124 }, table: 232, depth: 12, xs: [34, 90, 146], lightsY: [32, 44], chipY: 1146, wordY: 650,
+  '9x16': { win: { x: 12, y: 46, w: 156, h: 124 }, table: 232, depth: 12, xs: [34, 90, 146], lightsY: [32, 44], chipY: 1116, wordY: 650,
     props: { pumpkin: 10, notes: 62, board: 116, mug: 170 } },
 };
 
@@ -28,8 +28,12 @@ export default {
     const Ly = LAYOUT[c.fmt];
     const L1 = cue(c, 'br.1', { start: 0, end: beatAfter(c, 0, 4) });
     const L2 = cue(c, 'br.2', { start: beatAfter(c, 0, 4), end: c.dur });
-    const lightT = [0, 1, 2].map((i) => beatAfter(c, L1.start, i) + (i === 0 ? 1 / 30 : 0));
-    const chipT = beatAfter(c, L1.start, 3);
+    // light-ups follow the real phrasing: "FIRST-timer? (2 beats) STUDENT? (1) SEASONED pro?" counted from the beat
+    // nearest the line start; the first one lands with the line itself
+    const bl = Math.max(0.2, c.beat(Math.max(0, L1.start) + 0.01).len || 0.6);
+    const near = nearestBeat(c, L1.start);
+    const lightT = [L1.start + 1 / 30, near + 2 * bl, near + 3 * bl];
+    const chipT = lightT[2] + bl * 0.5;
     const teamT = L2.start;
     const H = hitsFor(c, 'br.2', [5, 6, 7]);
     const goT = H[2];
@@ -120,6 +124,12 @@ export default {
     }
   },
 };
+
+function nearestBeat(c, t0) {
+  let best = t0, d = Infinity;
+  for (const b of c.beats) if (Math.abs(b - t0) < d) { d = Math.abs(b - t0); best = b; }
+  return best;
+}
 
 function room(g, t, c, Ly, blaze) {
   const ctx = g.px;

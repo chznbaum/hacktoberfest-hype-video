@@ -31,7 +31,7 @@ export default {
     const h4 = hitsFor(c, 'br.4', [4, 5, 6]);
     const all = [...h3, ...h4];
     const n = passed(all, t);
-    const lastBeat = beatAfter(c, h4[2], 1);
+    const lastBeat = Math.min(beatAfter(c, h4[2] + 0.05, 0), h4[2] + 0.5 * (c.dur - h4[2]));
     const end = c.dur;
     // camera: steady tilt up into the sky, accelerating in the last beat
     const k = clamp(t / Math.max(0.5, end));

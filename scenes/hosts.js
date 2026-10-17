@@ -62,22 +62,24 @@ function shell(h, t, t0, p, header, idx, draw) {
 
 function hostPanel(h, t, c, t0, p, header, id, idx) {
   shell(h, t, t0, p, header, idx, (hh, pad) => {
-    const { entry, img } = logo(id);
+    const { entry, img: file, mark } = logo(id);
     const name = (entry && entry.display) || 'REVOLUTION VA';
     const top = p.y + pad + 46 * 0.75 + 36;          // below the header
     const availH = p.y + p.h - pad - top;
     const availW = p.w - pad * 2;
-    if (img && (!entry || entry.kind === 'mark')) {
-      // mark + wordmark text (as on the key art)
-      const fb = fitBox(img, availW * 0.32, availH);
+    // prefer the bird mark + big typeset name (key-art arrangement, readable at phone size); a lone 'mark' file works too
+    const markImg = mark || (file && entry && /^mark/.test(entry.kind || '') ? file : null);
+    const img = markImg ? null : file;
+    if (markImg) {
+      const fb = fitBox(markImg, availW * 0.32, availH);
       const lx = p.x + pad - 6, ly = top + (availH - fb.h) / 2;
       const slide = R((1 - tween(t, t0 + 0.03, 0.2, ease.outCubic)) * 30);
-      hh.drawImage(tinted(img, fb.w, fb.h, C.cream), lx - snap(slide), ly);
+      hh.drawImage(tinted(markImg, fb.w, fb.h, C.cream), lx - snap(slide), ly);
       const tx = lx + fb.w + 26;
       const size = Math.min(110, fitSize(hh, name, p.x + p.w - pad - tx, { role: 'cond', maxSize: 110, weight: 500, tracking: 0.02 }));
       stampName(hh, t, t0 + 0.07, name, tx, ly + fb.h * 0.56, size, 500);
     } else if (img) {
-      const fb = fitBox(img, availW, availH * 0.8);
+      const fb = fitBox(img, availW, availH);
       hh.drawImage(tinted(img, fb.w, fb.h, C.cream), p.x + (p.w - fb.w) / 2, top + (availH - fb.h) / 2);
     } else {
       wordmark(hh, t, t0, name, p, pad, top, availW, availH);
@@ -92,7 +94,7 @@ function sponsorPanel(h, t, c, t0, p, header, id, idx) {
     const top = p.y + pad + 46 * 0.75 + 36;
     const availH = p.y + p.h - pad - top;
     const availW = p.w - pad * 2;
-    if (img && entry && entry.kind === 'mark') {
+    if (img && entry && /^mark/.test(entry.kind || '')) {
       const fb = fitBox(img, availW * 0.3, availH);
       const lx = p.x + pad, ly = top + (availH - fb.h) / 2;
       hh.drawImage(tinted(img, fb.w, fb.h, C.cream), lx, ly);
@@ -103,8 +105,8 @@ function sponsorPanel(h, t, c, t0, p, header, id, idx) {
         text(hh, ln, tx, ly + fb.h * (lines.length > 1 ? 0.42 + i * 0.36 : 0.55), { role: 'cond', size, weight: i ? 700 : 800, color: i ? C.sky : C.cream, baseline: 'cap-middle' });
       });
     } else if (img) {
-      // wordmark file: fit the whole box, cream tint
-      const fb = fitBox(img, availW, availH * 0.86);
+      // lockup / wordmark file: as large as the box allows, cream tint (horizontal file in both formats: the panels are wide)
+      const fb = fitBox(img, availW, availH);
       const sc = 1 + 0.12 * (1 - tween(t, t0 + 0.05, 0.16, ease.outCubic));
       const w = fb.w * sc, hgt = fb.h * sc;
       hh.drawImage(tinted(img, fb.w, fb.h, C.cream), p.x + (p.w - w) / 2, top + (availH - hgt) / 2, w, hgt);

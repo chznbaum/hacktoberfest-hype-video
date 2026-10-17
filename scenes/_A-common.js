@@ -355,19 +355,23 @@ export function loadLogos() {
         const j = await r.json();
         LOGOS.list = j.logos || [];
       } catch (e) { LOGOS.list = []; }
-      await Promise.all(LOGOS.list.filter((l) => l.file).map((l) => new Promise((res) => {
+      const load = (src) => new Promise((res) => {
         const im = new Image();
-        im.onload = () => { LOGOS.images[l.id] = im; res(); };
-        im.onerror = () => res(); // missing file -> text fallback
-        im.src = l.file;
-      })));
+        im.onload = () => res(im);
+        im.onerror = () => res(null); // missing file -> text fallback
+        im.src = src;
+      });
+      await Promise.all(LOGOS.list.map(async (l) => {
+        if (l.file) LOGOS.images[l.id] = await load(l.file);
+        if (l.mark) LOGOS.images[l.id + '#mark'] = await load(l.mark);
+      }));
     })();
   }
   return logoLoad;
 }
 export function logo(id) {
   const l = LOGOS.list.find((x) => x.id === id);
-  return { entry: l || null, img: LOGOS.images[id] || null };
+  return { entry: l || null, img: LOGOS.images[id] || null, mark: LOGOS.images[id + '#mark'] || null };
 }
 const tintCache = new Map();
 /** Image tinted to a flat color (alpha mask), at device size w x h. */

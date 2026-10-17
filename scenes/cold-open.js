@@ -16,42 +16,46 @@ export default {
     const v = c.fmt === '9x16';
     const b = (i) => beatT(c, i);
     const end = c.dur;
-    // bar index + phase across the clip (16 beats)
-    const nb = 16;
-    const lastBar = b(12), lastBeat = b(15);
-    // camera tilt: from the stars down to the bay over the first 2 bars (eased), integer pixels
-    const tiltK = tween(t, 0, Math.max(0.5, b(7)), ease.inOutCubic);
+    // the structure scales with however many beats the cold open has (placeholder: 16, real track: ~7)
+    let nb = 0;
+    while (b(nb) < end - 0.05 && nb < 64) nb++;
+    nb = Math.max(4, nb);
+    const iEye = Math.round(nb * 0.45), iBuild = Math.max(Math.round(nb * 0.6), nb - 4), iOut = nb - 1;
+    const lastBar = b(iBuild), lastBeat = b(iOut);
+    // camera tilt: from the stars down to the bay, done by the time the eyebrow types on (eased, integer px)
+    const tiltK = tween(t, 0, Math.max(0.5, b(iEye) - 0.05), ease.inOutCubic);
     const oy0 = v ? 120 : 76;
     const oy = Math.round(oy0 * (1 - tiltK));
-    // beam: half a turn per bar -> a beam faces the camera on every downbeat; last bar: a half turn per beat
-    const barPos = beatPos(c, t) / 4;
-    let ang = Math.PI / 2 + barPos * Math.PI;
-    if (t >= lastBar) ang = Math.PI / 2 + 3 * Math.PI + (beatPos(c, t) - 12) * Math.PI;
-    // lantern: steady glow, pumps on beats in the last bar, flares into the cut
+    // beam: half a turn per bar -> a beam faces the camera on every downbeat; build: a half turn per beat
+    const bp = beatPos(c, t);
+    let ang = Math.PI / 2 + (bp / 4) * Math.PI;
+    if (t >= lastBar) ang = Math.PI / 2 + (iBuild / 4) * Math.PI + (bp - iBuild) * Math.PI;
+    // lantern: steady glow, pumps on beats in the build, flares into the cut
     const inBuild = t >= lastBar;
     const pump = inBuild ? c.pulse(t, 0.3) : 0;
     const flare = clamp((t - (lastBeat + (end - lastBeat) * 0.35)) / Math.max(0.05, (end - lastBeat) * 0.65));
     const W = bayWorld(g, t, c, {
       oy, tod: 'night', beamAngle: ang, beamStrength: 0.85 + 0.15 * pump, glow: 0.85 + 0.15 * pump,
-      starShow: 0.55 + 0.45 * tween(t, 0, b(8)), waterX: 0, waterFull: true,
+      starShow: 0.55 + 0.45 * tween(t, 0, b(iEye)), waterX: 0, waterFull: true,
       cloudsAt: v ? undefined : [{ kind: 'big', x: 150, y: 40, v: 0.8 }, { kind: 'wisp', x: 20, y: 70, v: 0.5 }, { kind: 'small', x: 120, y: 30, v: 0.6 }],
-      clearRect: t >= b(8) - 0.05 ? (v ? [11, 38, 112, 12] : [24, 13, 108, 11]) : null,
+      clearRect: t >= b(iEye) - 0.05 ? (v ? [11, 38, 112, 12] : [24, 13, 108, 11]) : null,
     });
-    // lantern: small flare on each beat of the build bar, then a growing anamorphic flare into the cut
+    // lantern: small flare on each beat of the build, then a growing anamorphic flare into the cut
     const L = W.lh.lantern;
     const fk = Math.max(pump * 0.45, flare > 0 ? 0.35 + 0.65 * ease.inQuad(flare) : 0);
     lensFlare(g.px, L.x, L.y, fk, { len: v ? 50 : 70 });
+    const iStar = Math.max(1, Math.round(nb * 0.25));
     // shooting star on the downbeat of bar 2 (beat 4)
-    shootingStar(g.px, t, b(4), v ? { x: 150, y: 40 + Math.round(oy * 0.45), dx: -60, dy: 22 } : { x: 230, y: 14 + Math.round(oy * 0.45), dx: -110, dy: 26 }, beatLen(c));
+    shootingStar(g.px, t, b(iStar), v ? { x: 150, y: 40 + Math.round(oy * 0.45), dx: -60, dy: 22 } : { x: 230, y: 14 + Math.round(oy * 0.45), dx: -110, dy: 26 }, beatLen(c));
     // a second, smaller one in the build bar
-    if (inBuild) shootingStar(g.px, t, b(13), v ? { x: 40, y: 70, dx: 44, dy: 16 } : { x: 70, y: 22, dx: 80, dy: 18 }, beatLen(c) * 0.8);
+    if (inBuild && nb >= 8) shootingStar(g.px, t, b(iOut - 2), v ? { x: 40, y: 70, dx: 44, dy: 16 } : { x: 70, y: 22, dx: 80, dy: 18 }, beatLen(c) * 0.8);
 
     // ---------------- type: the tiny eyebrow, key-art ||| bars + mono caps
     const hi = g.hi;
     const s = c.safe;
     const str = c.facts.coldOpenEyebrow || 'HAMPTON, VA · 10.17.26';
     const size = v ? 32 : 31;
-    const tIn = b(8), tOut = b(15);
+    const tIn = b(iEye), tOut = b(iOut);
     // key-art eyebrow slot: right of the coral corner stairs (16:9) / under them (9:16)
     const x = v ? s.x0 : 162;
     const y = v ? 276 : 126;

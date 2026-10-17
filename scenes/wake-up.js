@@ -20,6 +20,10 @@ export default {
     const b = (i) => beatAfter(c, L.start, i);
     const tSun = b(0), tUp = b(1), tHack = b(2);
     const spb = Math.max(0.2, tUp - tSun);
+    // In the full 16:9 edit C05 stair-wipes in over C04's last beat. If "Hack-" falls inside that wipe, the headline
+    // lands one beat early (on "wake up") and flashes again on "Hack-"; in the social cut (hard cut) it lands on "Hack-".
+    const wiped = c.edit !== 'social' && tHack > c.dur - spb * 1.15;
+    const tHead = wiped ? tUp : tHack;
     const B = BAY[c.fmt];
     const horizon = B.waterY;
     // sun path: breaks the horizon on the downbeat, rises fast (ease-out), keeps drifting up slowly
@@ -53,27 +57,27 @@ export default {
     }
     // sun burst: an expanding ring of light on the downbeat, clipped to the sky
     burstRing(g.px, sunX, sunY, t - tSun, horizon, v ? 90 : 120);
-    burstRing(g.px, sunX, sunY, t - tHack, horizon, v ? 70 : 90, 1);
+    burstRing(g.px, sunX, sunY, t - tHead, horizon, v ? 70 : 90, 1);
     // gulls take off on "wake up": flap hard, climb away from the seawall
     flyingGulls(g.px, t, tUp, c.fmt, kDay);
     // ---------------- type: flash + key-art headline on "Hacktoberfest"
     const hi = g.hi;
     const s = c.safe;
     corners(hi, c.fmt, { y: v ? 132 : undefined });
-    const fk = t >= tHack ? 1 - (t - tHack) / 0.16 : 0;
+    const fk = Math.max(t >= tHead ? 1 - (t - tHead) / 0.16 : 0, wiped && t >= tHack ? 0.7 * (1 - (t - tHack) / 0.16) : 0);
     if (fk > 0) flash(hi, g.W, g.H, 0.55 * Math.ceil(fk * 3) / 3, C.cream);
-    if (t >= tHack) {
+    if (t >= tHead) {
       if (!v) {
         const size = fitSize(hi, 'Hacktoberfest', 1282, { role: 'display', maxSize: 260 });
-        stampHead(hi, t, tHack, 90, 166, size);
+        stampHead(hi, t, tHead, 90, 166, size);
       } else {
         const size = fitSize(hi, 'Hacktoberfest', s.w, { role: 'display', maxSize: 200 });
-        stampHead(hi, t, tHack, s.x0 - 4, 400, size);
+        stampHead(hi, t, tHead, s.x0 - 4, 400, size);
       }
       plus(hi, v ? 984 : 1788, v ? 870 : 192, { scale: 0.8 + 0.4 * c.pulse(t, 0.3) });
     }
     // sparkles pop off the sun on the headline hit
-    for (let i = 0; i < 4; i++) sparkle(g.px, sunX + R((hash(i, 1, 4) - 0.5) * 40), sunY - 8 - R(hash(i, 2, 4) * 20), t, tHack + i * 0.05, { color: i % 2 ? C.cream : C.gold, size: 2, dur: 0.35 });
+    for (let i = 0; i < 4; i++) sparkle(g.px, sunX + R((hash(i, 1, 4) - 0.5) * 40), sunY - 8 - R(hash(i, 2, 4) * 20), t, tHead + i * 0.05, { color: i % 2 ? C.cream : C.gold, size: 2, dur: 0.35 });
   },
 };
 
